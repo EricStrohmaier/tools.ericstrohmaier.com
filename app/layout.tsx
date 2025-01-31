@@ -6,7 +6,7 @@ import { Header } from "@/components/landingpage/header";
 import { createClient } from "@/utils/supabase/server";
 import { Provider } from "@/components/Provider";
 import { Toaster } from "@/components/ui/sonner";
-import { Footer } from "@/components/landingpage/Footer";
+import { Footer } from "@/components/landingpage/Foooter";
 
 const inter = Inter({ subsets: ["latin"] });
 
