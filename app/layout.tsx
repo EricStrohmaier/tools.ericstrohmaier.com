@@ -5,8 +5,8 @@ import "@/styles/globals.css";
 import { Header } from "@/components/landingpage/header";
 import { createClient } from "@/utils/supabase/server";
 import { Provider } from "@/components/Provider";
-import { Footer } from "@/components/landingpage/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import { Footer } from "@/components/landingpage/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
