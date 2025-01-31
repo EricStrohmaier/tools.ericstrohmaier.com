@@ -1,6 +1,6 @@
 "use client";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
-import { Invoice } from "@/types/invoice";
+import { InvoiceItem } from "@/types/invoice";
 
 const styles = StyleSheet.create({
   page: {
@@ -121,7 +121,7 @@ interface InvoicePDFProps {
   dueDate: string;
   companyDetails: string;
   billTo: string;
-  items: Invoice;
+  items: InvoiceItem[];
   subtotal: number;
   taxRate: number;
   tax: number;
