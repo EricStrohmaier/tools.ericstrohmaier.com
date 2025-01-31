@@ -5,7 +5,9 @@ import { type Provider } from "@supabase/supabase-js";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import GoogleIcon from "@/components/app/icons/google";
+
+import GoogleIcon from "../app/icons/google";
+import { ContinueWithEmailCode } from "./EmailCode";
 
 type OAuthProviders = {
   name: Provider;
@@ -13,14 +15,19 @@ type OAuthProviders = {
   icon: JSX.Element;
 };
 
-export default function OauthSignIn({ signuptype }: { signuptype?: string }) {
+export default function OauthSignIn({
+  viewProp,
+  signuptype,
+}: {
+  viewProp: string;
+  signuptype?: string;
+}) {
   const oAuthProviders: OAuthProviders[] = [
     {
       name: "google",
-      displayName: "Google",
+      displayName: "Continue with Google",
       icon: <GoogleIcon className="w-6 h-6" />,
     },
-    /* Add desired OAuth providers here */
   ];
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -50,6 +57,7 @@ export default function OauthSignIn({ signuptype }: { signuptype?: string }) {
           </Button>
         </form>
       ))}
+      {viewProp === "signup" && <ContinueWithEmailCode />}
     </div>
   );
 }

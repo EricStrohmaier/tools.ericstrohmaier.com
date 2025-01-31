@@ -1,7 +1,6 @@
-import React from "react";
 import Image from "next/image";
-import { landingpageContent } from "@/constants/landingpage";
-import Container from "@/components/landingpage/Container";
+import { landingpageContent } from "@/config/landingpage";
+import { Container } from "@/components/ui/container";
 
 export function PartnerCompanies() {
   const content = landingpageContent.partnerCompanies;

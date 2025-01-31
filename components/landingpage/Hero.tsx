@@ -1,6 +1,6 @@
-import Container from "@/components/landingpage/Container";
+import { Container } from "@/components/ui/container";
 import HeroCTA from "./herocta";
-import { landingpageContent } from "@/constants/landingpage";
+import { landingpageContent } from "@/config/landingpage";
 import Image from "next/image";
 // import svg from "@/public/landingpage/Vector5.svg";
 

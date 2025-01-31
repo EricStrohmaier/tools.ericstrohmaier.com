@@ -41,6 +41,8 @@ export default async function middleware(req: NextRequest) {
   }`;
 
   // rewrites for app pages
+  // here we can define rendering of subdomains
+  // and render different folder or components
   if (hostname === `info.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
     // const session = await getToken({ req });
     // if (!session && path !== "/login") {
@@ -59,7 +61,7 @@ export default async function middleware(req: NextRequest) {
     hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
   ) {
     return NextResponse.rewrite(
-      new URL(`/app${path === "/" ? "" : path}`, req.url)
+      new URL(`${path === "/" ? "" : path}`, req.url)
     );
   }
 

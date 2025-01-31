@@ -1,29 +1,51 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
-import "react-data-grid/lib/styles.css";
 
-import { Toaster } from "@/components/ui/sonner";
+import { Header } from "@/components/landingpage/header";
+import { createClient } from "@/utils/supabase/server";
 import { Provider } from "@/components/Provider";
+import { Footer } from "@/components/landingpage/Footer";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "My Local Board",
-  description: "A place to buy and sell local products",
-  icons: ["https://joo.world/favicon.ico"],
+  title: "",
+  description: "",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <head>
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="8aa1afc7-b3eb-460c-ab50-fd386289cdaa"
+        />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2706727138311810"
+          crossOrigin="anonymous"
+        />
+      </head>
+      <body className={`h-full ${inter.className}`}>
         <Provider>
-          {children}
+          <div className="flex flex-col w-full h-full bg-background">
+            <Header user={user as any} />
+            <main className="flex-auto">{children}</main>
+          </div>
+          <Footer />
           <Toaster richColors theme="light" closeButton />
         </Provider>
       </body>

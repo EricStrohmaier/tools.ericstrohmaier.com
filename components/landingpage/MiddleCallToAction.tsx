@@ -1,8 +1,8 @@
 import Image from "next/image";
 
-import Container from "@/components/landingpage/Container";
+import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { landingpageContent } from "@/constants/landingpage";
+import { landingpageContent } from "@/config/landingpage";
 import Link from "next/link";
 
 export function MiddleCallToAction() {

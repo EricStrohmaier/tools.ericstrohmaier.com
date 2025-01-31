@@ -13,21 +13,27 @@ This guide will walk you through setting up and managing a Supabase project usin
 ## Setting Up the Supabase Project
 
 1. **Start the local Supabase instance**
+
    ```
    supabase start
    ```
+
    This starts a local Docker instance of Supabase.
 
 2. **Apply your schema**
+
    ```
    supabase db push
    ```
+
    This applies your `schema.sql` to the local database.
 
 3. **Create a new project on Supabase.com**
+
    ```
    supabase link --project-ref your-project-ref
    ```
+
    Replace `your-project-ref` with the reference ID from your Supabase.com project.
 
 4. **Push your local schema to the remote project**
@@ -39,26 +45,32 @@ This guide will walk you through setting up and managing a Supabase project usin
 ## Merging Schema with an Existing Project
 
 1. **Link your local setup to the existing Supabase project**
+
    ```
    supabase link --project-ref your-existing-project-ref
    ```
 
 2. **Pull the current schema**
+
    ```
    supabase db pull
    ```
+
    This creates a `supabase/migrations` directory with the current schema.
 
 3. **Merge your new schema**
    Manually merge your new schema into the pulled migration files. Be careful to:
+
    - Use `CREATE TABLE IF NOT EXISTS` to avoid conflicts
    - Use `ALTER TABLE` for adding new columns to existing tables
    - Review and adjust constraints and policies
 
 4. **Apply the merged schema locally**
+
    ```
    supabase db push
    ```
+
    Test thoroughly on your local instance.
 
 5. **Push changes to the remote project**
@@ -70,9 +82,11 @@ This guide will walk you through setting up and managing a Supabase project usin
 ## Managing Migrations
 
 - **Create a new migration**
+
   ```
   supabase migration new your_migration_name
   ```
+
   This creates a new timestamped SQL file in `supabase/migrations`.
 
 - **Apply migrations**

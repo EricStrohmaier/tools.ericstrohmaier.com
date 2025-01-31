@@ -3,8 +3,9 @@
 import React, { useTransition } from "react";
 import { Submitbutton } from "../app/SubmitButtons";
 import { toast } from "sonner";
-import { insertWaitlistEmail } from "@/actions/insertWaitlistEmail";
-import { landingpageContent } from "@/constants/landingpage";
+
+import { landingpageContent } from "@/config/landingpage";
+import { insertWaitlistEmail } from "@/app/actions";
 
 export default function EmailForm() {
   const [isPending, startTransition] = useTransition();

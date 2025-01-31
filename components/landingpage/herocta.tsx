@@ -1,13 +1,14 @@
 "use client";
 
-import { landingpageContent } from "@/constants/landingpage";
+import { landingpageContent } from "@/config/landingpage";
 import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useTransition } from "react";
 import { Button } from "../ui/button";
 import { Submitbutton } from "../app/SubmitButtons";
-import { insertWaitlistEmail } from "@/actions/insertWaitlistEmail";
+
 import { toast } from "sonner";
+import { insertWaitlistEmail } from "@/app/actions";
 
 export default function HeroCTA({
   content,

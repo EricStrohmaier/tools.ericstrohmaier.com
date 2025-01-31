@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import clsx from "clsx";
 
-import Container from "@/components/landingpage/Container";
-import { landingpageContent } from "@/constants/landingpage";
+import { Container } from "@/components/ui/container";
+import { landingpageContent } from "@/config/landingpage";
 
 export function BenefitsFeature({ isMarketplace = false }) {
   const content = landingpageContent;

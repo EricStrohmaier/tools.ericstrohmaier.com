@@ -5,8 +5,8 @@ import { Tab, TabGroup, TabList } from "@headlessui/react";
 import clsx from "clsx";
 import { FiGitBranch, FiPackage, FiPlay } from "react-icons/fi";
 
-import Container from "@/components/landingpage/Container";
-import { landingpageContent } from "@/constants/landingpage";
+import { Container } from "@/components/ui/container";
+import { landingpageContent } from "@/config/landingpage";
 import { IconType } from "react-icons";
 import Image, { StaticImageData } from "next/image";
 

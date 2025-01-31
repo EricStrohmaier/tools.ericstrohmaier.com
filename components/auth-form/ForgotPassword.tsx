@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { requestPasswordUpdate } from "@/utils/auth-helpers/server";
 import { handleRequest } from "@/utils/auth-helpers/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 // Define prop type with allowEmail boolean
 interface ForgotPasswordProps {
@@ -39,7 +39,8 @@ export default function ForgotPassword({
         <div className="grid gap-2">
           <div className="grid gap-1">
             <label htmlFor="email">Email</label>
-            <input
+            <Input
+              variant={"login"}
               id="email"
               placeholder="name@example.com"
               type="email"
@@ -51,42 +52,16 @@ export default function ForgotPassword({
             />
           </div>
           <Button
-            variant="slim"
+            variant="login"
             type="submit"
             className="mt-1 font-semibold"
             loading={isSubmitting}
             disabled={disableButton}
           >
-            Send Email
+            Continue
           </Button>
         </div>
       </form>
-      <p>
-        <Link
-          href="/signin/password_signin"
-          className="text-sm font-light underline hover:font-normal"
-        >
-          Sign in with email and password
-        </Link>
-      </p>
-      {allowEmail && (
-        <p>
-          <Link
-            href="/signin/email_signin"
-            className="text-sm font-light underline hover:font-normal"
-          >
-            Sign in via magic link
-          </Link>
-        </p>
-      )}
-      <p>
-        <Link
-          href="/signin/signup"
-          className="text-sm font-light underline hover:font-normal"
-        >
-          Don&apos;t have an account? Sign up
-        </Link>
-      </p>
     </div>
   );
 }

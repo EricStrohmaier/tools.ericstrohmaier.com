@@ -14,9 +14,10 @@ import {
 import clsx from "clsx";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { landingpageContent } from "@/constants/landingpage";
+import { landingpageContent } from "@/config/landingpage";
 import { UserNav } from "../app/UserNav";
-import Container from "@/components/landingpage/Container";
+import { Container } from "../ui/container";
+import { User } from "@/types/supabase";
 
 function CloseIcon(props: React.ComponentPropsWithoutRef<"svg">) {
   return (
@@ -213,7 +214,7 @@ function Avatar({
   );
 }
 
-export function Header({ user }: { user: any }) {
+export function Header({ user }: { user: User | null }) {
   let isHomePage = usePathname() === "/";
   const isAbout = usePathname() === "/about";
 

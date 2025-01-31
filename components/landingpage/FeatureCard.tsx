@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 // import svg from "@/public/landingpage/Vector2.png";
 
 interface FeatureCardProps {

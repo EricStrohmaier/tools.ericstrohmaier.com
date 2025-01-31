@@ -31,11 +31,7 @@ export async function signOut() {
   return { data: null, error: null };
 }
 
-export async function signInWithEmail(
-  formData: FormData,
-  hostname: string,
-  signuptype?: string
-) {
+export async function signInWithEmail(formData: FormData) {
   // const subdomain = hostname.split(".")[0]; // Extract the subdomain
   const cookieStore = cookies();
   const callbackURL = getURL("/api/auth/confirm");
@@ -45,7 +41,7 @@ export async function signInWithEmail(
 
   if (!isValidEmail(email) || email === "") {
     return (redirectPath = getErrorRedirect(
-      `/signin/${signuptype}/email_signin`,
+      `/signin/email_signin`,
       "Invalid email address.",
       "Please try again."
     ));
@@ -63,14 +59,9 @@ export async function signInWithEmail(
 
   if (allowPassword) options.shouldCreateUser = false;
 
-  if (signuptype === "shop") {
-    cookieStore.set("signuptype", "shop", { path: "/" });
-  }
-
   const { data, error } = await supabase.auth.signInWithOtp({
     email: email,
     options: {
-      data: { signuptype: signuptype },
       emailRedirectTo: callbackURL,
       shouldCreateUser: true,
     },
@@ -78,7 +69,7 @@ export async function signInWithEmail(
 
   if (error) {
     redirectPath = getErrorRedirect(
-      `/signin/${signuptype}/email_signin`,
+      `/signin/email_signin`,
       "You could not be signed in.",
       error.message
     );
@@ -89,14 +80,72 @@ export async function signInWithEmail(
     );
 
     redirectPath = getStatusRedirect(
-      `/signin/${signuptype}/email_signin`,
+      `/signin/email_signin`,
       "Success!",
       "Please check your email for a magic link. You may now close this tab.",
       true
     );
   } else {
     redirectPath = getErrorRedirect(
-      `/signin/${signuptype}/email_signin`,
+      `/signin/email_signin`,
+      "Hmm... Something went wrong.",
+      "You could not be signed in."
+    );
+  }
+
+  return redirectPath;
+}
+
+export async function signInWithEmailCode(
+  formData: FormData,
+  hostname: string
+) {
+  // const subdomain = hostname.split(".")[0]; // Extract the subdomain
+  const cookieStore = cookies();
+  const callbackURL = getURL("/api/auth/confirm");
+
+  const email = String(formData.get("email")).trim();
+  let redirectPath: string;
+
+  if (!isValidEmail(email) || email === "") {
+    return (redirectPath = getErrorRedirect(
+      `/signin/email_signin`,
+      "Invalid email address.",
+      "Please try again."
+    ));
+  }
+
+  const supabase = createClient();
+
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email: email,
+    options: {
+      emailRedirectTo: callbackURL,
+      shouldCreateUser: true,
+    },
+  });
+
+  if (error) {
+    redirectPath = getErrorRedirect(
+      `/signin/email_signin`,
+      "You could not be signed in.",
+      error.message
+    );
+  } else if (data) {
+    cookieStore.set("preferredSignInView", "email_signin", { path: "/" });
+    console.log(
+      "Please check your email for a magic link. You may now close this tab."
+    );
+
+    redirectPath = getStatusRedirect(
+      `/signin/email_signin`,
+      "Success!",
+      "Please check your email for a magic link. You may now close this tab.",
+      true
+    );
+  } else {
+    redirectPath = getErrorRedirect(
+      `/signin/email_signin`,
       "Hmm... Something went wrong.",
       "You could not be signed in."
     );
@@ -366,4 +415,51 @@ export async function updateName(formData: FormData) {
       "Your name could not be updated."
     );
   }
+}
+
+export async function requestResetPassword(formData: FormData) {
+  const options = {
+    redirectTo: getURL(),
+  };
+  // Get form data
+  const email = String(formData.get("email")).trim();
+  let redirectPath: string;
+
+  if (!isValidEmail(email)) {
+    redirectPath = getErrorRedirect(
+      "/forgot_password",
+      "Invalid email address.",
+      "Please try again."
+    );
+  }
+
+  const supabase = createClient();
+
+  const { data, error } = await supabase.auth.resetPasswordForEmail(
+    email,
+    options
+  );
+
+  if (error) {
+    redirectPath = getErrorRedirect(
+      "/forgot_password",
+      error.message,
+      "Please try again."
+    );
+  } else if (data) {
+    redirectPath = getStatusRedirect(
+      "/forgot_password",
+      "Success!",
+      "Please check your email for a password reset link. You may now close this tab.",
+      true
+    );
+  } else {
+    redirectPath = getErrorRedirect(
+      "/forgot_password",
+      "Hmm... Something went wrong.",
+      "Password reset email could not be sent."
+    );
+  }
+
+  return redirectPath;
 }

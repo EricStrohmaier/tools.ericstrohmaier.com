@@ -1,24 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    missingSuspenseWithCSRBailout: false,
-    serverActions: {
-      allowedOrigins: ["partner.localhost:3000"],
-    },
+  webpack: (config) => {
+    // Disable canvas and encoding modules
+    config.resolve.alias.canvas = false;
+    config.resolve.alias.encoding = false;
+
+    // Handle PDF.js worker
+    config.resolve.alias["pdfjs-dist/build/pdf.worker.entry"] = false;
+
+    return config;
   },
-  images: {
-    remotePatterns: [
-      {
-        hostname: "utfs.io",
-        protocol: "https",
-        port: "",
-      },
-      {
-        hostname: "vhxkjwczllimkfbbowmf.supabase.co",
-        protocol: "https",
-      },
-    ],
-  },
+  transpilePackages: ["@react-pdf/renderer"],
 };
 
 export default nextConfig;

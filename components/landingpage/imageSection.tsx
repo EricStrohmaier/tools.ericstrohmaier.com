@@ -1,7 +1,6 @@
-import React from "react";
 import ImageCard from "./ImageCard";
 import FeatureCard from "./FeatureCard";
-import { landingpageContent } from "@/constants/landingpage";
+import { landingpageContent } from "@/config/landingpage";
 
 export default function ImageSection() {
   const { features } = landingpageContent.imageSection;
