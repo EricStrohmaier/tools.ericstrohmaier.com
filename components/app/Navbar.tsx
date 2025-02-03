@@ -4,7 +4,7 @@ import Link from "next/link";
 import { NavbarLinks } from "./NavbarLinks";
 import { MobileMenu } from "./MobileMenu";
 import { UserNav } from "./UserNav";
-import logo from "@/public/logo.png";
+import logo from "@/public/icon.png";
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";

@@ -8,12 +8,35 @@ import { createClient } from "@/utils/supabase/server";
 import { Provider } from "@/components/Provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/landingpage/Foooter";
+import { siteConfig } from "@/config/site";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "",
-  description: "",
+  title: siteConfig.name,
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  authors: [
+    {
+      name: "Eric Strohmaier",
+      url: "https://ericstrohmaier.com",
+    },
+  ],
+  creator: "Eric Strohmaier",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: `https://${siteConfig.domain}/`,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: `https://${siteConfig.domain}/icon.png`,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+  },
 };
 
 export default async function RootLayout({

@@ -8,18 +8,18 @@ import avatarImage5 from "@/public/landingpage/avatars/avatar-5.png";
 import backgroundImageMiddleCTA from "@/public/landingpage/bluebackgroundtree.jpg";
 import abstractBackgroundImage from "@/public/landingpage/abstract-background.png";
 import socialcareImg from "@/public/landingpage/socialcare.png";
-import logo from "@/public/logo.png";
+import logo from "@/public/icon.png";
 import { siteConfig } from "./site";
 
 export const landingpageContent = {
   header: {
     company: {
-      name: "Company Name",
+      name: siteConfig.name,
       logo: logo,
       logoHref: "/",
     },
     button: {
-      active: true,
+      active: false,
       text: "Get Started",
       href: "/signin",
     },
@@ -349,10 +349,7 @@ export const landingpageContent = {
   },
   footer: {
     links: {
-      main: [
-        { name: "Login", href: "/signin" },
-        { name: "Support", href: "/contact" },
-      ],
+      main: [{ name: "Support", href: "/contact" }],
       legal: [
         { name: "Terms of services", href: "/terms" },
         { name: "Privacy policy", href: "/privacy" },
