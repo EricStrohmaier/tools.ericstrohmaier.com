@@ -10,6 +10,10 @@ import {
 } from "@/components/ui/dialog";
 import { Contact } from "@/types/invoice";
 import { Plus, X } from "lucide-react";
+import {
+  secureLocalStorage,
+  getFromSecureLocalStorage,
+} from "@/utils/encryption";
 
 interface ContactsManagerProps {
   onSelectContact: (contact: Contact) => void;
@@ -24,27 +28,32 @@ export function ContactsManager({ onSelectContact }: ContactsManagerProps) {
     address: "",
     email: "",
     phone: "",
-    currency: "$",
+    currency: "€",
   });
   const [isOpen, setIsOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
 
   useEffect(() => {
-    const savedContacts = localStorage.getItem("contacts");
-    if (savedContacts) {
-      setContacts(JSON.parse(savedContacts));
-    }
+    const loadContacts = async () => {
+      const savedContacts = await getFromSecureLocalStorage<Contact[]>(
+        "contacts"
+      );
+      if (savedContacts) {
+        setContacts(savedContacts);
+      }
+    };
+    loadContacts();
   }, []);
 
-  const saveContact = () => {
+  const saveContact = async () => {
     const updatedContact = {
       ...newContact,
       id: crypto.randomUUID(),
     };
     const updatedContacts = [...contacts, updatedContact];
     setContacts(updatedContacts);
-    localStorage.setItem("contacts", JSON.stringify(updatedContacts));
+    await secureLocalStorage("contacts", updatedContacts);
     setNewContact({
       id: "",
       name: "",
@@ -52,6 +61,7 @@ export function ContactsManager({ onSelectContact }: ContactsManagerProps) {
       address: "",
       email: "",
       phone: "",
+      currency: "$",
     });
     setIsOpen(false);
   };
@@ -66,13 +76,13 @@ export function ContactsManager({ onSelectContact }: ContactsManagerProps) {
     setDeleteDialogOpen(true);
   };
 
-  const deleteContact = () => {
+  const deleteContact = async () => {
     if (contactToDelete) {
       const updatedContacts = contacts.filter(
         (c) => c.id !== contactToDelete.id
       );
       setContacts(updatedContacts);
-      localStorage.setItem("contacts", JSON.stringify(updatedContacts));
+      await secureLocalStorage("contacts", updatedContacts);
       setDeleteDialogOpen(false);
       setContactToDelete(null);
     }
@@ -126,11 +136,13 @@ export function ContactsManager({ onSelectContact }: ContactsManagerProps) {
                 </div>
                 <div className="space-y-2">
                   <Label>Address</Label>
-                  <Input
+                  <textarea
+                    className="w-full min-h-24 p-2 border rounded-md"
                     value={newContact.address}
                     onChange={(e) =>
                       setNewContact({ ...newContact, address: e.target.value })
                     }
+                    placeholder="Address"
                   />
                 </div>
                 <div className="space-y-2">

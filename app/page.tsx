@@ -25,6 +25,10 @@ import {
   CompanySettings,
 } from "@/types/invoice";
 import { FaRegFilePdf } from "react-icons/fa";
+import {
+  secureLocalStorage,
+  getFromSecureLocalStorage,
+} from "@/utils/encryption";
 
 // Dynamically import PDFViewer with no SSR
 const PDFViewer = dynamic(
@@ -54,20 +58,31 @@ const InvoiceGenerator = () => {
     }
   }, [activeTab]);
   const [showCompanySettings, setShowCompanySettings] = useState(false);
+
   // Initialize state with data from localStorage if it exists
-  const initialCompanySettings = (() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("companySettings");
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {
-          console.error("Error parsing company settings:", e);
+  const [companySettings, setCompanySettings] = useState<CompanySettings>(
+    defaultCompanySettings
+  );
+
+  useEffect(() => {
+    const loadCompanySettings = async () => {
+      if (typeof window !== "undefined") {
+        const settings = await getFromSecureLocalStorage<CompanySettings>(
+          "companySettings"
+        );
+        if (settings) {
+          setCompanySettings(settings);
+          // Update company details when settings are loaded
+          const details = `${settings.name}
+${settings.address}
+${settings.email || ""}
+${settings.phone || ""}`.trim();
+          setCompanyDetails(details);
         }
       }
-    }
-    return defaultCompanySettings;
-  })();
+    };
+    loadCompanySettings();
+  }, []);
 
   const [items, setItems] = useState<InvoiceItem[]>([
     {
@@ -86,20 +101,18 @@ const InvoiceGenerator = () => {
   const [invoiceDate, setInvoiceDate] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [selectedContactId, setSelectedContactId] = useState<string>("");
-  const [companySettings, setCompanySettings] = useState<CompanySettings>(
-    initialCompanySettings
-  );
+
   const [currency, setCurrency] = useState("$");
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
   // Update company settings and save to localStorage
-  const updateCompanySettings = (
+  const updateCompanySettings = async (
     field: keyof CompanySettings,
     value: string
   ) => {
     const newSettings = { ...companySettings, [field]: value };
     setCompanySettings(newSettings);
-    localStorage.setItem("companySettings", JSON.stringify(newSettings));
+    await secureLocalStorage("companySettings", newSettings);
 
     // Update company details if relevant fields change
     if (["name", "address", "email", "phone"].includes(field)) {
@@ -124,39 +137,46 @@ ${companySettings.phone || ""}`.trim();
 
   // Load saved invoice data from localStorage
   useEffect(() => {
-    const savedInvoice = localStorage.getItem("currentInvoice");
-    if (savedInvoice) {
-      const invoice: Invoice = JSON.parse(savedInvoice);
-      setItems(invoice.items || []);
-      setTotal(invoice.total || 0);
-      setInvoiceNumber(invoice.invoiceNumber || "");
-      setBillTo(invoice.billTo || "");
-      setInvoiceDate(invoice.issueDate || "");
-      setDueDate(invoice.dueDate || "");
-      setSelectedContactId(invoice.selectedContactId || "");
-    }
+    const loadInvoice = async () => {
+      const invoice = await getFromSecureLocalStorage<Invoice>(
+        "currentInvoice"
+      );
+      if (invoice) {
+        setItems(invoice.items || []);
+        setTotal(invoice.total || 0);
+        setInvoiceNumber(invoice.invoiceNumber || "");
+        setBillTo(invoice.billTo || "");
+        setInvoiceDate(invoice.issueDate || "");
+        setDueDate(invoice.dueDate || "");
+        setSelectedContactId(invoice.selectedContactId || "");
+      }
+    };
+    loadInvoice();
   }, []);
 
   // Save invoice data to localStorage
   useEffect(() => {
-    const invoice: Invoice = {
-      invoiceNumber,
-      issueDate: invoiceDate,
-      dueDate,
-      companyDetails,
-      billTo,
-      items,
-      subtotal: total,
-      taxRate: 0,
-      tax: 0,
-      shippingFee: 0,
-      total,
-      selectedContactId,
-      notes: companySettings.notes,
-      bankDetails: companySettings.bankDetails,
-      currency,
+    const saveInvoice = async () => {
+      const invoice: Invoice = {
+        invoiceNumber,
+        issueDate: invoiceDate,
+        dueDate,
+        companyDetails,
+        billTo,
+        items,
+        subtotal: total,
+        taxRate: 0,
+        tax: 0,
+        shippingFee: 0,
+        total,
+        selectedContactId,
+        notes: companySettings.notes,
+        bankDetails: companySettings.bankDetails,
+        currency,
+      };
+      await secureLocalStorage("currentInvoice", invoice);
     };
-    localStorage.setItem("currentInvoice", JSON.stringify(invoice));
+    saveInvoice();
   }, [
     items,
     total,
@@ -308,10 +328,10 @@ ${contact.phone || ""}`.trim()
         </DialogContent>
       </Dialog>
       <div className="flex flex-col mb-6">
-        <h1 className="text-2xl font-bold mb-2">Invoice Generator</h1>
+        <h1 className="text-2xl font-semibold mb-2">Boring Invoice</h1>
         <p className="text-sm text-gray-600">
-          Your data is securely stored in your browser&apos;s local storage
-          only. We don&apos;t save or transmit any information.
+          A simple invoice generator. Your data stays in your browser - no
+          servers, no tracking.
         </p>
       </div>
 
@@ -330,7 +350,7 @@ ${contact.phone || ""}`.trim()
             className="w-full"
             onValueChange={setActiveTab}
           >
-            <div className="flex items-center justify-between gap-4 mb-4">
+            <Card className="flex items-center justify-between gap-4 mb-4 p-1">
               <div>
                 <TabsList className="flex gap-4 bg-muted rounded-lg p-1">
                   <TabsTrigger
@@ -382,7 +402,7 @@ ${contact.phone || ""}`.trim()
                   fileName={`invoice-${invoiceNumber || "draft"}.pdf`}
                 />
               </div>
-            </div>
+            </Card>
 
             <TabsContent value="preview" className="mt-0">
               {showPDF ? (

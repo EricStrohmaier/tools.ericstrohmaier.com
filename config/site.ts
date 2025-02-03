@@ -1,18 +1,17 @@
 export const siteConfig = {
   supportEmail: "office@boringlandingpage.com",
-  name: "BoringLandingpage",
-  domain: "boringlandingpage.com",
-  url: "https://boringlandingpage.com",
-  //  Keep Slack Status Always Online
-  tagline: "Boring landingpages that convert",
+  name: "BoringInvoice",
+  domain: "boringinvoice.vercel.app",
+  url: "https://boringinvoice.vercel.app",
+  tagline: "A simple invoice generator that just works",
   description:
-    "Slackactivity is the ultimate tool for automatically managing your Slack status based on your work schedule and timezone. Ideal for professionals juggling multiple workspaces, it ensures that your status is always up-to-date, without manual intervention. Stay connected and boost productivity effortlessly.",
+    "Create and manage invoices with a straightforward, no-frills interface. Your data stays in your browser's local storage.",
   keywords: [
-    "Landingpage",
-    "Boringlandingpage",
-    "template",
-    "remote work",
-    "work schedule",
+    "invoice",
+    "invoice generator",
+    "pdf invoice",
+    "simple invoice",
+    "free invoice",
   ],
   auth: {
     loginUrl: "/signin",

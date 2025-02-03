@@ -13,38 +13,74 @@ export const metadata = getSEOTags({
 const termsOfService = `
 # Terms of Service
 
-*Last Updated: September 29, 2024*
+*Last Updated: February 3, 2025*
 
-Welcome to Slacktivity. By accessing or using our website (https://slackactivity.com), you agree to the following Terms & Services. Please read them carefully.
+Welcome to our Invoice Generator. By using this website, you agree to these Terms of Service. Please read them carefully.
 
-### 1. Services  
-Slacktivity offers a platform to automate and manage Slack status updates based on user-defined schedules. Our service involves integration with Slack workspaces to enhance productivity by optimizing status management.
+### 1. Services
 
-### 2. Payments  
-Slacktivity charges a fee of €20 per workspace for the services provided. Payment is required upon setup of each workspace, and it covers automated status management and related features. By completing the payment, you agree to these terms.
+We provide a free invoice generation tool that:
+- Allows creation and management of invoices
+- Stores data locally in your browser
+- Encrypts your data for security
+- Generates PDF invoices
 
-### 3. User Data  
-We collect personal information such as your name, email address, and payment details to manage your account and process payments. For more information, please refer to our [Privacy Policy](https://slackactivity.com/privacy-policy).
+### 2. No Cost
 
-### 4. Non-Personal Data  
-We may collect non-personal data such as cookies to improve your experience on our site. These cookies are used to provide better service and can be managed through your browser settings.
+Our invoice generator is provided free of charge. We may display advertisements to support the service.
 
-### 5. User Responsibilities  
-Users are responsible for providing accurate information during account setup and workspace integration. Slacktivity is not responsible for any issues arising from incorrect user data.
+### 3. Data Storage and Security
 
-### 6. Governing Law  
-These Terms & Services are governed by the laws of Austria.
+- All data is stored locally in your browser's storage
+- Data is encrypted before storage using AES-GCM encryption
+- We do not store or process any of your data on our servers
+- You are responsible for backing up your data
 
-### 7. Updates to the Terms  
-We may update these Terms from time to time. Users will be notified of any changes via email. Continued use of the site after updates constitutes acceptance of the revised terms.
+### 4. Limitations
 
-### 8. Contact Information  
-If you have any questions or concerns regarding these Terms, please contact us at: office@slackactivity.com.
+- We provide this service "as is" without any warranties
+- We are not responsible for any loss of data
+- We do not guarantee uninterrupted access to the service
+- Features may change without notice
+
+### 5. Acceptable Use
+
+You agree to:
+- Use the service for legal purposes only
+- Not attempt to circumvent any security measures
+- Not use the service to generate fraudulent invoices
+- Not attempt to harm or disrupt the service
+
+### 6. Intellectual Property
+
+- The software, design, and branding remain our property
+- You may not copy, modify, or redistribute the service
+- Generated invoices belong to you
+
+### 7. Third-Party Services
+
+- We use Google AdSense for advertising
+- Third-party services have their own terms and policies
+- We are not responsible for third-party services
+
+### 8. Changes to Terms
+
+- We may update these terms at any time
+- Changes will be effective immediately upon posting
+- Continued use constitutes acceptance of changes
+
+### 9. Disclaimer
+
+THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. WE DO NOT GUARANTEE THE ACCURACY, COMPLETENESS, OR USEFULNESS OF THE SERVICE.
+
+### 10. Contact
+
+For questions about these terms, contact:
+Email: contact@ericstrohmaier.com
 
 ---
 
-Thank you for using Slacktivity. We hope our service helps boost your productivity!
-`;
+Thank you for using our Invoice Generator responsibly.`;
 
 const TOS = () => {
   return (

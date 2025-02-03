@@ -15,5 +15,7 @@ export const config = {
 };
 
 export default async function middleware(req: NextRequest) {
+  req.headers.set("x-pathname", req.nextUrl.pathname);
+  req.headers.set("x-url", req.url);
   return await updateSession(req);
 }

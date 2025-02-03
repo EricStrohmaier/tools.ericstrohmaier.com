@@ -13,82 +13,60 @@ export const metadata = getSEOTags({
 const privacyPolicy = `
 # Privacy Policy
 
-*Last Updated: September 29, 2024*
+*Last Updated: February 3, 2025*
 
-Slacktivity ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and share your personal information when you use our website (https://slackactivity.com) and services.
+This Privacy Policy explains how our Invoice Generator ("we," "our," or "us") handles your data and privacy when you use our website.
 
-### 1. Information We Collect
+### 1. Local Storage and Data Security
 
-We collect the following types of information from users:
+Our invoice generator operates entirely in your browser using local storage:
 
-**Personal Information**  
-When you sign up or interact with our services, we collect personal information that may include your:
-- Name
-- Email address
-- Payment details (handled through secure third-party processors)
+- All data (company settings, contacts, and invoices) is stored locally on your device
+- Data is encrypted before being saved to local storage using AES-GCM encryption
+- We do not collect, transmit, or store any of your data on our servers
+- You have full control over your data - it stays on your device
 
-**Non-Personal Information**  
-We may collect non-personal information to improve your experience on our site. This may include:
-- Cookies and similar technologies
-- Usage data (e.g., pages visited, clicks, and browsing habits)
+### 2. Google Ads
 
-### 2. How We Use Your Information
+We use Google AdSense on our website:
 
-We use your personal information to:
-- Provide and maintain our services (e.g., automating your Slack status updates)
-- Process payments for your subscription
-- Communicate with you regarding updates, billing, or support
-- Improve our services and user experience
-- Comply with legal requirements
+- Google may use cookies to serve ads based on your prior visits
+- You can opt out of personalized advertising by visiting Google's Ad Settings
+- We do not share any of your invoice or contact data with Google
+- Google's use of advertising cookies is subject to Google's privacy policy
 
-We use non-personal information to:
-- Enhance and optimize the user experience on our site
-- Analyze site performance and user interaction for improvements
+### 3. Analytics
 
-### 3. Cookies
+We may use basic analytics to understand how our website is used:
 
-Slacktivity uses cookies and similar tracking technologies to enhance your browsing experience. Cookies help us remember your preferences and understand how you interact with our site. You can control or disable cookies in your browser settings, though this may affect the functionality of the site.
+- This includes anonymous data like page views and browser types
+- No personal information or invoice data is included in analytics
+- Analytics help us improve the user experience
 
-### 4. Third-Party Service Providers
+### 4. Your Data Rights
 
-We use third-party service providers to process payments (e.g., Stripe) and for email communication. These providers have access to your personal information but are obligated to use it only for specific purposes related to our services.
+Since all data is stored locally on your device:
 
-### 5. Data Security
+- You can clear all data by clearing your browser's local storage
+- No account deletion is needed as we don't store any data
+- You have complete control over your information
 
-We take the security of your data seriously and implement industry-standard security measures to protect it. However, no method of transmission over the internet or method of electronic storage is 100% secure, and we cannot guarantee its absolute security.
+### 5. Children's Privacy
 
-### 6. Data Retention
+Our service is not intended for users under 13 years of age.
 
-We retain your personal data for as long as it is necessary to provide you with our services and for legitimate business purposes. If you wish to delete your account or request that we no longer use your information, please contact us at office@slackactivity.com.
+### 6. Changes to Privacy Policy
 
-### 7. Your Rights
+We may update this policy occasionally. Changes will be reflected in the "Last Updated" date.
 
-You have the following rights regarding your personal information:
-- **Access**: Request a copy of the data we hold about you.
-- **Correction**: Request corrections to your personal data.
-- **Deletion**: Request the deletion of your data under certain conditions.
-- **Objection**: Object to how we process your data.
+### 7. Contact
 
-To exercise any of these rights, please contact us at office@slackactivity.com.
-
-### 8. Children's Privacy
-
-Slacktivity is not intended for use by individuals under the age of 16, and we do not knowingly collect personal information from children.
-
-### 9. Changes to This Privacy Policy
-
-We may update this Privacy Policy from time to time. We will notify you of any significant changes by email or through our website. The updated Privacy Policy will be effective as of the "Last Updated" date above.
-
-### 10. Contact Us
-
-If you have any questions or concerns about this Privacy Policy or how we handle your personal information, please contact us at:
-
-Email: office@slackactivity.com.
+For questions about this privacy policy, contact us at:
+Email: contact@ericstrohmaier.com
 
 ---
 
-Thank you for trusting Slacktivity. We are committed to protecting your privacy and ensuring transparency in how your data is used.
-`;
+Thank you for using our Invoice Generator. We're committed to protecting your privacy by keeping your data local and encrypted.`;
 
 const PrivacyPolicy = () => {
   return (
