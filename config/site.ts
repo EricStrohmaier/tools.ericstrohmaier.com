@@ -1,8 +1,8 @@
 export const siteConfig = {
-  supportEmail: "office@boringlandingpage.com",
+  supportEmail: "contact@ericstrohmaier.com",
   name: "BoringInvoice",
-  domain: "boringinvoice.vercel.app",
-  url: "https://boringinvoice.vercel.app",
+  domain: "boringinvoice.ericstrohmaier.com",
+  url: "https://boringinvoice.ericstrohmaier.com",
   tagline: "A simple invoice generator that just works",
   description:
     "Create and manage invoices with a straightforward, no-frills interface. Your data stays in your browser's local storage.",
