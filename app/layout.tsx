@@ -54,18 +54,13 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      {/* <head>
-        <script
-          defer
-          src="https://cloud.umami.is/script.js"
-          data-website-id="8aa1afc7-b3eb-460c-ab50-fd386289cdaa"
-        />
+      <head>
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2706727138311810"
           crossOrigin="anonymous"
         />
-      </head> */}
+      </head>
       <body className={`h-full ${inter.className}`}>
         <Provider>
           <div className="flex flex-col w-full h-full bg-background">
