@@ -113,6 +113,11 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#EEEEEE",
   },
+  currency: {
+    position: "absolute",
+    bottom: 30,
+    right: 30,
+  },
 });
 
 interface InvoicePDFProps {
@@ -129,6 +134,7 @@ interface InvoicePDFProps {
   total: number;
   notes?: string;
   bankDetails?: string;
+  currency: string;
 }
 
 const InvoicePDF = ({
@@ -145,6 +151,7 @@ const InvoicePDF = ({
   total,
   notes,
   bankDetails,
+  currency,
 }: InvoicePDFProps) => (
   <Document>
     <Page size="A4" style={styles.page}>
@@ -194,9 +201,11 @@ const InvoicePDF = ({
       <View style={styles.summarySection}>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Subtotal</Text>
-          <Text style={styles.summaryValue}>$ {subtotal.toFixed(2)}</Text>
+          <Text style={styles.summaryValue}>
+            {currency} {subtotal.toFixed(2)}
+          </Text>
         </View>
-        
+
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>(Tax Rate)</Text>
           <Text style={styles.summaryValue}>{taxRate} %</Text>
@@ -204,17 +213,25 @@ const InvoicePDF = ({
 
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Tax</Text>
-          <Text style={styles.summaryValue}>$ {tax.toFixed(2)}</Text>
+          <Text style={styles.summaryValue}>
+            {currency} {tax.toFixed(2)}
+          </Text>
         </View>
 
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Shipping</Text>
-          <Text style={styles.summaryValue}>$ {shippingFee.toFixed(2)}</Text>
+          <Text style={styles.summaryValue}>
+            {currency} {shippingFee.toFixed(2)}
+          </Text>
         </View>
 
         <View style={[styles.summaryRow, styles.total]}>
-          <Text style={[styles.summaryLabel, styles.totalLabel]}>Invoice Total</Text>
-          <Text style={[styles.summaryValue, styles.totalValue]}>US$ {total.toFixed(2)}</Text>
+          <Text style={[styles.summaryLabel, styles.totalLabel]}>
+            Invoice Total
+          </Text>
+          <Text style={[styles.summaryValue, styles.totalValue]}>
+            {currency} {total.toFixed(2)}
+          </Text>
         </View>
       </View>
 

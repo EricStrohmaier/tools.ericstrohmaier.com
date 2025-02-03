@@ -5,6 +5,7 @@ export interface Contact {
   address: string;
   email?: string;
   phone?: string;
+  currency?: string;
 }
 
 export interface CompanySettings {
@@ -39,4 +40,5 @@ export interface Invoice {
   selectedContactId?: string;
   notes?: string;
   bankDetails?: string;
+  currency: string;
 }
