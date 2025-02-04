@@ -43,9 +43,10 @@ const defaultCompanySettings: CompanySettings = {
   name: "",
   address: "",
   email: "",
-  phone: "",
   bankDetails: "",
   notes: "Payment is due within 15 days",
+  language: "en",
+  dateFormat: "MM/DD/YYYY",
 };
 
 const InvoiceGenerator = () => {
@@ -75,8 +76,7 @@ const InvoiceGenerator = () => {
           // Update company details when settings are loaded
           const details = `${settings.name}
 ${settings.address}
-${settings.email || ""}
-${settings.phone || ""}`.trim();
+${settings.email || ""}`.trim();
           setCompanyDetails(details);
         }
       }
@@ -93,9 +93,13 @@ ${settings.phone || ""}`.trim();
       amount: 0,
     },
   ]);
+  const [subtotal, setSubtotal] = useState(0);
+  const [taxRate, setTaxRate] = useState(0);
+  const [tax, setTax] = useState(0);
+  const [shippingFee, setShippingFee] = useState(0);
   const [total, setTotal] = useState(0);
   const [showPDF, setShowPDF] = useState(false);
-  const [invoiceNumber, setInvoiceNumber] = useState("");
+  const [invoiceNumber, setInvoiceNumber] = useState("001");
   const [companyDetails, setCompanyDetails] = useState("");
   const [billTo, setBillTo] = useState("");
   const [invoiceDate, setInvoiceDate] = useState("");
@@ -115,11 +119,10 @@ ${settings.phone || ""}`.trim();
     await secureLocalStorage("companySettings", newSettings);
 
     // Update company details if relevant fields change
-    if (["name", "address", "email", "phone"].includes(field)) {
+    if (["name", "address", "email"].includes(field)) {
       const newDetails = `${newSettings.name}
 ${newSettings.address}
-${newSettings.email || ""}
-${newSettings.phone || ""}`.trim();
+${newSettings.email || ""}`.trim();
       setCompanyDetails(newDetails);
     }
   };
@@ -129,8 +132,7 @@ ${newSettings.phone || ""}`.trim();
     if (companySettings) {
       const details = `${companySettings.name}
 ${companySettings.address}
-${companySettings.email || ""}
-${companySettings.phone || ""}`.trim();
+${companySettings.email || ""}`.trim();
       setCompanyDetails(details);
     }
   }, []);
@@ -227,11 +229,19 @@ ${companySettings.phone || ""}`.trim();
   };
 
   const calculateTotal = (currentItems: InvoiceItem[]) => {
-    const subtotal = currentItems.reduce(
+    const newSubtotal = currentItems.reduce(
       (sum, item) => sum + (item.amount || 0),
       0
     );
-    setTotal(subtotal);
+    setSubtotal(newSubtotal);
+
+    // Calculate tax
+    const newTax = (newSubtotal * taxRate) / 100;
+    setTax(newTax);
+
+    // Calculate total
+    const newTotal = newSubtotal + newTax + shippingFee;
+    setTotal(newTotal);
   };
 
   const handleContactSelect = (contact: Contact) => {
@@ -241,13 +251,12 @@ ${companySettings.phone || ""}`.trim();
     setBillTo(
       `${contact.name}${contact.companyName ? `\n${contact.companyName}` : ""}
 ${contact.address}
-${contact.email || ""}
-${contact.phone || ""}`.trim()
+${contact.email || ""}`.trim()
     );
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-6 space-y-6">
+    <div className="w-full max-w-6xl mx-auto p-3 md:p-6 space-y-4 md:space-y-6">
       <Dialog open={showCompanySettings} onOpenChange={setShowCompanySettings}>
         <DialogContent className="max-w-[500px]">
           <DialogHeader>
@@ -292,18 +301,7 @@ ${contact.phone || ""}`.trim()
                 placeholder="Company Address"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Phone</Label>
-                <Input
-                  value={companySettings?.phone || ""}
-                  onChange={(e) =>
-                    updateCompanySettings("phone", e.target.value)
-                  }
-                  placeholder="Phone Number"
-                />
-              </div>
-            </div>
+
             <div>
               <Label>Default Payment Terms</Label>
               <textarea
@@ -324,6 +322,39 @@ ${contact.phone || ""}`.trim()
                 placeholder="Bank Account Details"
               />
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Language</Label>
+                <select
+                  className="w-full p-2 border rounded-md"
+                  value={companySettings?.language || "en"}
+                  onChange={(e) =>
+                    updateCompanySettings("language", e.target.value)
+                  }
+                >
+                  <option value="en">English</option>
+                  <option value="de">German</option>
+                  <option value="fr">French</option>
+                  <option value="it">Italian</option>
+                  <option value="es">Spanish</option>
+                </select>
+              </div>
+              <div>
+                <Label>Date Format</Label>
+                <select
+                  className="w-full p-2 border rounded-md"
+                  value={companySettings?.dateFormat || "MM/DD/YYYY"}
+                  onChange={(e) =>
+                    updateCompanySettings("dateFormat", e.target.value)
+                  }
+                >
+                  <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                  <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                  <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                  <option value="DD.MM.YYYY">DD.MM.YYYY</option>
+                </select>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -335,24 +366,24 @@ ${contact.phone || ""}`.trim()
         </p>
       </div>
 
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
         {/* Left Sidebar - Contacts */}
-        <Card className="col-span-1">
+        <Card className="lg:col-span-1 order-2 lg:order-1">
           <CardContent className="p-4">
             <ContactsManager onSelectContact={handleContactSelect} />
           </CardContent>
         </Card>
 
         {/* Main Content Area */}
-        <div className="col-span-3">
+        <div className="lg:col-span-3 order-1 lg:order-2">
           <Tabs
             defaultValue="editor"
             className="w-full"
             onValueChange={setActiveTab}
           >
-            <Card className="flex items-center justify-between gap-4 mb-4 p-1">
-              <div>
-                <TabsList className="flex gap-4 bg-muted rounded-lg p-1">
+            <Card className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 mb-4 p-1">
+              <div className="w-full sm:w-auto">
+                <TabsList className="flex w-full sm:w-auto gap-2 md:gap-4 bg-muted rounded-lg p-1">
                   <TabsTrigger
                     value="editor"
                     className="flex items-center gap-2 data-[state=active]:bg-background"
@@ -369,7 +400,7 @@ ${contact.phone || ""}`.trim()
                   </TabsTrigger>
                 </TabsList>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2 justify-center sm:justify-end w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="sm"
@@ -389,14 +420,15 @@ ${contact.phone || ""}`.trim()
                       companyDetails={companyDetails}
                       billTo={billTo}
                       items={items}
-                      subtotal={total}
-                      taxRate={0}
-                      tax={0}
-                      shippingFee={0}
+                      subtotal={subtotal}
+                      taxRate={taxRate}
+                      tax={tax}
+                      shippingFee={shippingFee}
                       total={total}
                       notes={companySettings.notes}
                       bankDetails={companySettings.bankDetails}
                       currency={currency}
+                      settings={companySettings}
                     />
                   }
                   fileName={`invoice-${invoiceNumber || "draft"}.pdf`}
@@ -418,14 +450,15 @@ ${contact.phone || ""}`.trim()
                       companyDetails={companyDetails}
                       billTo={billTo}
                       items={items}
-                      subtotal={total}
-                      taxRate={0}
-                      tax={0}
-                      shippingFee={0}
+                      subtotal={subtotal}
+                      taxRate={taxRate}
+                      tax={tax}
+                      shippingFee={shippingFee}
                       total={total}
                       notes={companySettings.notes}
                       bankDetails={companySettings.bankDetails}
                       currency={currency}
+                      settings={companySettings}
                     />
                   </PDFViewer>
                 </div>
@@ -455,13 +488,19 @@ ${contact.phone || ""}`.trim()
               <Card>
                 <CardContent className="space-y-6 p-4">
                   <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label>Invoice Number</Label>
                         <Input
                           placeholder="INV-001"
                           value={invoiceNumber}
-                          onChange={(e) => setInvoiceNumber(e.target.value)}
+                          onChange={(e) => {
+                            let value = e.target.value;
+                            if (!value) value = "001";
+                            if (!value.startsWith("INV-"))
+                              value = `INV-${value}`;
+                            setInvoiceNumber(value);
+                          }}
                         />
                       </div>
                       <div>
@@ -500,8 +539,11 @@ ${contact.phone || ""}`.trim()
                             <Input
                               type="date"
                               value={dueDate}
-                              readOnly
                               className="bg-gray-50"
+                              onChange={(e) => {
+                                const newDate = e.target.value;
+                                setDueDate(newDate);
+                              }}
                             />
                           </div>
                         </div>
@@ -511,7 +553,7 @@ ${contact.phone || ""}`.trim()
 
                   {/* Items Table */}
                   <div className="space-y-4">
-                    <div className="grid grid-cols-12 gap-4 font-medium">
+                    <div className="grid grid-cols-12 gap-2 md:gap-4 font-medium text-sm md:text-base">
                       <div className="col-span-6">Description</div>
                       <div className="col-span-2">Unit Cost </div>
                       <div className="col-span-2">Quantity</div>
@@ -521,42 +563,49 @@ ${contact.phone || ""}`.trim()
                     {items.map((item, index) => (
                       <div
                         key={item.id}
-                        className="grid grid-cols-12 gap-4 items-center"
+                        className="grid grid-cols-12 gap-2 md:gap-4 items-center text-sm md:text-base"
                       >
                         <div className="col-span-6">
                           <Input
                             placeholder="Item description"
                             value={item.description}
+                            maxLength={100}
                             onChange={(e) =>
-                              updateItem(index, "description", e.target.value)
+                              updateItem(
+                                index,
+                                "description",
+                                e.target.value.slice(0, 100)
+                              )
                             }
                           />
                         </div>
                         <div className="col-span-2">
                           <Input
                             type="number"
+                            min="0"
+                            max="999999999"
+                            step="0.01"
                             value={item.unitCost}
                             placeholder={`${currency}0.00`}
-                            onChange={(e) =>
-                              updateItem(
-                                index,
-                                "unitCost",
-                                parseFloat(e.target.value)
-                              )
-                            }
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value) || 0;
+                              if (value > 999999999) return;
+                              updateItem(index, "unitCost", Math.max(0, value));
+                            }}
                           />
                         </div>
                         <div className="col-span-2">
                           <Input
                             type="number"
+                            min="0"
+                            max="999999"
+                            step="1"
                             value={item.quantity}
-                            onChange={(e) =>
-                              updateItem(
-                                index,
-                                "quantity",
-                                parseInt(e.target.value)
-                              )
-                            }
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value) || 0;
+                              if (value > 999999) return;
+                              updateItem(index, "quantity", Math.max(0, value));
+                            }}
                           />
                         </div>
                         <div className="col-span-2 flex items-center gap-2">
@@ -585,14 +634,14 @@ ${contact.phone || ""}`.trim()
                   </div>
 
                   {/* Summary Section */}
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-4"></div>
-                    <div className="space-y-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    <div className="space-y-4 col-span-1"></div>
+                    <div className="space-y-4 col-span-1 lg:justify-self-end w-full lg:w-80">
                       <div className="flex justify-between">
                         <span>Subtotal:</span>
                         <span>
                           {currency}
-                          {total.toFixed(2)}
+                          {subtotal.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -601,15 +650,22 @@ ${contact.phone || ""}`.trim()
                           type="number"
                           className="w-32 text-right"
                           placeholder="0%"
+                          value={taxRate}
+                          onChange={(e) => {
+                            const newTaxRate = parseFloat(e.target.value) || 0;
+                            setTaxRate(newTaxRate);
+                            const newTax = (subtotal * newTaxRate) / 100;
+                            setTax(newTax);
+                            setTotal(subtotal + newTax + shippingFee);
+                          }}
                         />
                       </div>
                       <div className="flex justify-between items-center">
-                        <span>Discount:</span>
-                        <Input
-                          type="number"
-                          className="w-32 text-right"
-                          placeholder={`${currency}0.00`}
-                        />
+                        <span>Tax Amount:</span>
+                        <span className="w-32 text-right">
+                          {currency}
+                          {tax.toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Shipping:</span>
@@ -617,6 +673,13 @@ ${contact.phone || ""}`.trim()
                           type="number"
                           className="w-32 text-right"
                           placeholder={`${currency}0.00`}
+                          value={shippingFee}
+                          onChange={(e) => {
+                            const newShippingFee =
+                              parseFloat(e.target.value) || 0;
+                            setShippingFee(newShippingFee);
+                            setTotal(subtotal + tax + newShippingFee);
+                          }}
                         />
                       </div>
                       <Separator />

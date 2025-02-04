@@ -27,7 +27,6 @@ export function ContactsManager({ onSelectContact }: ContactsManagerProps) {
     companyName: "",
     address: "",
     email: "",
-    phone: "",
     currency: "€",
   });
   const [isOpen, setIsOpen] = useState(false);
@@ -60,8 +59,7 @@ export function ContactsManager({ onSelectContact }: ContactsManagerProps) {
       companyName: "",
       address: "",
       email: "",
-      phone: "",
-      currency: "$",
+      currency: "€",
     });
     setIsOpen(false);
   };
@@ -152,15 +150,6 @@ export function ContactsManager({ onSelectContact }: ContactsManagerProps) {
                     value={newContact.email}
                     onChange={(e) =>
                       setNewContact({ ...newContact, email: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Phone</Label>
-                  <Input
-                    value={newContact.phone}
-                    onChange={(e) =>
-                      setNewContact({ ...newContact, phone: e.target.value })
                     }
                   />
                 </div>

@@ -1,6 +1,8 @@
 "use client";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
-import { InvoiceItem } from "@/types/invoice";
+import { InvoiceItem, CompanySettings } from "@/types/invoice";
+import { formatDate } from "@/utils/dateFormat";
+import { getTranslation } from "@/utils/translations";
 
 const styles = StyleSheet.create({
   page: {
@@ -135,6 +137,7 @@ interface InvoicePDFProps {
   notes?: string;
   bankDetails?: string;
   currency: string;
+  settings?: CompanySettings;
 }
 
 const InvoicePDF = ({
@@ -152,82 +155,127 @@ const InvoicePDF = ({
   notes,
   bankDetails,
   currency,
+  settings,
 }: InvoicePDFProps) => (
   <Document>
     <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>Invoice</Text>
+      <Text style={styles.title}>
+        {getTranslation("invoice", settings?.language)}
+      </Text>
 
       <View style={styles.headerGrid}>
         <View style={styles.headerCol}>
-          <Text style={styles.label}>Invoice Number</Text>
+          <Text style={styles.label}>
+            {getTranslation("invoiceNumber", settings?.language)}
+          </Text>
           <Text style={styles.value}>{invoiceNumber}</Text>
 
-          <Text style={styles.label}>Billed To</Text>
+          <Text style={styles.label}>
+            {getTranslation("billedTo", settings?.language)}
+          </Text>
           <Text style={styles.value}>{billTo}</Text>
         </View>
 
         <View style={styles.headerCol}>
-          <Text style={styles.label}>Date of Issue</Text>
-          <Text style={styles.value}>{issueDate}</Text>
+          <Text style={styles.label}>
+            {getTranslation("dateOfIssue", settings?.language)}
+          </Text>
+          <Text style={styles.value}>
+            {formatDate(issueDate, settings?.dateFormat || "YYYY-MM-DD")}
+          </Text>
 
-          <Text style={styles.label}>Due Date</Text>
-          <Text style={styles.value}>{dueDate}</Text>
+          <Text style={styles.label}>
+            {getTranslation("dueDate", settings?.language)}
+          </Text>
+          <Text style={styles.value}>
+            {formatDate(dueDate, settings?.dateFormat || "YYYY-MM-DD")}
+          </Text>
         </View>
 
         <View style={styles.headerCol}>
-          <Text style={styles.label}>From</Text>
+          <Text style={styles.label}>
+            {getTranslation("from", settings?.language)}
+          </Text>
           <Text style={styles.value}>{companyDetails}</Text>
         </View>
       </View>
 
       <View style={styles.table}>
         <View style={styles.tableHeader}>
-          <Text style={styles.description}>Description</Text>
-          <Text style={styles.unitCost}>Unit cost</Text>
-          <Text style={styles.qty}>QTY</Text>
-          <Text style={styles.amount}>Amount</Text>
+          <Text style={styles.description}>
+            {getTranslation("description", settings?.language)}
+          </Text>
+          <Text style={styles.unitCost}>
+            {getTranslation("unitCost", settings?.language)}
+          </Text>
+          <Text style={styles.qty}>
+            {getTranslation("quantity", settings?.language)}
+          </Text>
+          <Text style={styles.amount}>
+            {getTranslation("amount", settings?.language)}
+          </Text>
         </View>
 
-        {items.map((item, index) => (
-          <View key={index} style={styles.tableRow}>
-            <Text style={styles.description}>{item.description}</Text>
-            <Text style={styles.unitCost}>{item.unitCost}</Text>
-            <Text style={styles.qty}>{item.quantity}</Text>
-            <Text style={styles.amount}>{item.amount}</Text>
-          </View>
-        ))}
+        {items
+          .filter(
+            (item) => item.description && item.quantity > 0 && item.amount > 0
+          )
+          .map((item, index) => (
+            <View key={index} style={styles.tableRow}>
+              <Text style={styles.description}>{item.description}</Text>
+              <Text style={styles.unitCost}>{item.unitCost}</Text>
+              <Text style={styles.qty}>{item.quantity}</Text>
+              <Text style={styles.amount}>{item.amount}</Text>
+            </View>
+          ))}
       </View>
 
       <View style={styles.summarySection}>
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Subtotal</Text>
-          <Text style={styles.summaryValue}>
-            {currency} {subtotal.toFixed(2)}
-          </Text>
-        </View>
+        {subtotal > 0 && (
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>
+              {getTranslation("subtotal", settings?.language)}
+            </Text>
+            <Text style={styles.summaryValue}>
+              {currency} {subtotal.toFixed(2)}
+            </Text>
+          </View>
+        )}
 
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>(Tax Rate)</Text>
-          <Text style={styles.summaryValue}>{taxRate} %</Text>
-        </View>
+        {taxRate > 0 && (
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>
+              {getTranslation("taxRate", settings?.language)}
+            </Text>
+            <Text style={styles.summaryValue}>{taxRate}%</Text>
+          </View>
+        )}
 
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Tax</Text>
-          <Text style={styles.summaryValue}>
-            {currency} {tax.toFixed(2)}
-          </Text>
-        </View>
+        {tax > 0 && (
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>
+              {getTranslation("taxAmount", settings?.language)}
+            </Text>
+            <Text style={styles.summaryValue}>
+              {currency} {tax.toFixed(2)}
+            </Text>
+          </View>
+        )}
 
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Shipping</Text>
-          <Text style={styles.summaryValue}>
-            {currency} {shippingFee.toFixed(2)}
-          </Text>
-        </View>
+        {shippingFee > 0 && (
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>
+              {getTranslation("shipping", settings?.language)}
+            </Text>
+            <Text style={styles.summaryValue}>
+              {currency} {shippingFee.toFixed(2)}
+            </Text>
+          </View>
+        )}
 
         <View style={[styles.summaryRow, styles.total]}>
           <Text style={[styles.summaryLabel, styles.totalLabel]}>
-            Invoice Total
+            {getTranslation("invoiceTotal", settings?.language)}
           </Text>
           <Text style={[styles.summaryValue, styles.totalValue]}>
             {currency} {total.toFixed(2)}
@@ -238,13 +286,17 @@ const InvoicePDF = ({
       <View style={styles.footer}>
         {notes && (
           <View style={styles.notes}>
-            <Text style={styles.label}>Payment Terms:</Text>
+            <Text style={styles.label}>
+              {getTranslation("paymentTerms", settings?.language)}:
+            </Text>
             <Text>{notes}</Text>
           </View>
         )}
         {bankDetails && (
           <View style={styles.bankDetails}>
-            <Text style={styles.label}>Bank Details:</Text>
+            <Text style={styles.label}>
+              {getTranslation("bankDetails", settings?.language)}:
+            </Text>
             <Text>{bankDetails}</Text>
           </View>
         )}

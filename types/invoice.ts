@@ -15,6 +15,8 @@ export interface CompanySettings {
   phone?: string;
   bankDetails?: string;
   notes?: string;
+  language?: string;
+  dateFormat?: string;
 }
 
 export interface InvoiceItem {
