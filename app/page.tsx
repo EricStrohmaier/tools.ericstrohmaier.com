@@ -256,7 +256,7 @@ ${contact.email || ""}`.trim()
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-3 md:p-6 space-y-4 md:space-y-6">
+    <div className="w-full max-w-7xl mx-auto p-3 md:p-6 space-y-4 md:space-y-6">
       <Dialog open={showCompanySettings} onOpenChange={setShowCompanySettings}>
         <DialogContent className="max-w-[500px]">
           <DialogHeader>
@@ -485,8 +485,8 @@ ${contact.email || ""}`.trim()
             </TabsContent>
 
             <TabsContent value="editor">
-              <Card>
-                <CardContent className="space-y-6 p-4">
+              <Card className="max-w-[1400px] mx-auto">
+                <CardContent className="space-y-6 p-4 md:p-6">
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -554,10 +554,14 @@ ${contact.email || ""}`.trim()
                   {/* Items Table */}
                   <div className="space-y-4">
                     <div className="grid grid-cols-12 gap-2 md:gap-4 font-medium text-sm md:text-base">
-                      <div className="col-span-6">Description</div>
-                      <div className="col-span-2">Unit Cost </div>
-                      <div className="col-span-2">Quantity</div>
-                      <div className="col-span-2">Amount</div>
+                      <div className="col-span-5 md:col-span-6">
+                        Description
+                      </div>
+                      <div className="col-span-3 md:col-span-2 text-right">
+                        Unit Cost{" "}
+                      </div>
+                      <div className="col-span-2 text-right">Quantity</div>
+                      <div className="col-span-2 text-right">Amount</div>
                     </div>
 
                     {items.map((item, index) => (
@@ -565,7 +569,7 @@ ${contact.email || ""}`.trim()
                         key={item.id}
                         className="grid grid-cols-12 gap-2 md:gap-4 items-center text-sm md:text-base"
                       >
-                        <div className="col-span-6">
+                        <div className="col-span-5 md:col-span-6">
                           <Input
                             placeholder="Item description"
                             value={item.description}
@@ -579,46 +583,69 @@ ${contact.email || ""}`.trim()
                             }
                           />
                         </div>
-                        <div className="col-span-2">
+                        <div className="col-span-3 md:col-span-2">
                           <Input
-                            type="number"
-                            min="0"
-                            max="999999999"
-                            step="0.01"
-                            value={item.unitCost}
+                            type="text"
+                            inputMode="decimal"
+                            className="text-right"
                             placeholder={`${currency}0.00`}
+                            value={
+                              item.unitCost === 0
+                                ? ""
+                                : item.unitCost.toLocaleString("en-US", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                            }
                             onChange={(e) => {
-                              const value = parseFloat(e.target.value) || 0;
-                              if (value > 999999999) return;
+                              const value =
+                                parseFloat(e.target.value.replace(/,/g, "")) ||
+                                0;
+                              if (value > 999999999.99) return;
                               updateItem(index, "unitCost", Math.max(0, value));
                             }}
                           />
                         </div>
                         <div className="col-span-2">
                           <Input
-                            type="number"
-                            min="0"
-                            max="999999"
-                            step="1"
-                            value={item.quantity}
+                            type="text"
+                            inputMode="numeric"
+                            className="text-right"
+                            placeholder="0"
+                            value={item.quantity || ""}
                             onChange={(e) => {
-                              const value = parseInt(e.target.value) || 0;
+                              const value =
+                                parseInt(
+                                  e.target.value.replace(/[^0-9]/g, "")
+                                ) || 0;
                               if (value > 999999) return;
                               updateItem(index, "quantity", Math.max(0, value));
                             }}
                           />
                         </div>
-                        <div className="col-span-2 flex items-center gap-2">
-                          <span className="w-full text-right">
-                            {currency}
-                            {item.amount.toFixed(2)}
+                        <div className="col-span-2 flex items-center gap-1">
+                          <span
+                            className="w-full text-right text-sm md:text-base truncate cursor-help"
+                            title={`${currency} ${item.amount.toLocaleString(
+                              "en-US",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )}`}
+                          >
+                            {currency}{" "}
+                            {item.amount.toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
                           </span>
                           <Button
                             variant="destructive"
                             size="sm"
                             onClick={() => removeItem(index)}
                           >
-                            <X className="h-4 w-4" />
+                            <X className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>
@@ -637,22 +664,40 @@ ${contact.email || ""}`.trim()
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                     <div className="space-y-4 col-span-1"></div>
                     <div className="space-y-4 col-span-1 lg:justify-self-end w-full lg:w-80">
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-center">
                         <span>Subtotal:</span>
-                        <span>
-                          {currency}
-                          {subtotal.toFixed(2)}
+                        <span
+                          className="text-right min-w-[120px] cursor-help"
+                          title={`${currency} ${subtotal.toLocaleString(
+                            "en-US",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}`}
+                        >
+                          {currency}{" "}
+                          {subtotal.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Tax Rate:</span>
                         <Input
-                          type="number"
+                          type="text"
+                          inputMode="decimal"
                           className="w-32 text-right"
                           placeholder="0%"
-                          value={taxRate}
+                          value={taxRate || ""}
                           onChange={(e) => {
-                            const newTaxRate = parseFloat(e.target.value) || 0;
+                            const value = e.target.value.replace(
+                              /[^0-9.]/g,
+                              ""
+                            );
+                            const newTaxRate = parseFloat(value) || 0;
+                            if (newTaxRate > 100) return;
                             setTaxRate(newTaxRate);
                             const newTax = (subtotal * newTaxRate) / 100;
                             setTax(newTax);
@@ -662,32 +707,62 @@ ${contact.email || ""}`.trim()
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Tax Amount:</span>
-                        <span className="w-32 text-right">
-                          {currency}
-                          {tax.toFixed(2)}
+                        <span
+                          className="text-right min-w-[120px] cursor-help"
+                          title={`${currency} ${tax.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}`}
+                        >
+                          {currency}{" "}
+                          {tax.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Shipping:</span>
                         <Input
-                          type="number"
+                          type="text"
+                          inputMode="decimal"
                           className="w-32 text-right"
                           placeholder={`${currency}0.00`}
-                          value={shippingFee}
+                          value={
+                            shippingFee === 0
+                              ? ""
+                              : shippingFee.toLocaleString("en-US", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })
+                          }
                           onChange={(e) => {
-                            const newShippingFee =
-                              parseFloat(e.target.value) || 0;
+                            const value = e.target.value.replace(
+                              /[^0-9.]/g,
+                              ""
+                            );
+                            const newShippingFee = parseFloat(value) || 0;
+                            if (newShippingFee > 999999999.99) return;
                             setShippingFee(newShippingFee);
                             setTotal(subtotal + tax + newShippingFee);
                           }}
                         />
                       </div>
                       <Separator />
-                      <div className="flex justify-between font-bold">
-                        <span>Total:</span>
-                        <span>
-                          {currency}
-                          {total.toFixed(2)}
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold">Total:</span>
+                        <span
+                          className="text-right min-w-[120px] font-bold cursor-help"
+                          title={`${currency} ${total.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}`}
+                        >
+                          {currency}{" "}
+                          {total.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </span>
                       </div>
                     </div>

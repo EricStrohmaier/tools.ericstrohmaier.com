@@ -4,6 +4,14 @@ import { InvoiceItem, CompanySettings } from "@/types/invoice";
 import { formatDate } from "@/utils/dateFormat";
 import { getTranslation } from "@/utils/translations";
 
+const formatLargeNumber = (num: number): string => {
+  // Format with commas and limit to 2 decimal places
+  return num.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+};
+
 const styles = StyleSheet.create({
   page: {
     padding: 50,
@@ -52,18 +60,23 @@ const styles = StyleSheet.create({
   },
   description: {
     flex: 2,
+    paddingRight: 10,
   },
   unitCost: {
-    flex: 1,
+    width: "20%",
     textAlign: "right",
+    paddingRight: 10,
   },
   qty: {
-    flex: 1,
+    width: "15%",
     textAlign: "right",
+    paddingRight: 10,
   },
   amount: {
-    flex: 1,
+    width: "20%",
     textAlign: "right",
+    paddingRight: 10,
+    fontSize: 10,
   },
   summarySection: {
     marginTop: 30,
@@ -80,8 +93,9 @@ const styles = StyleSheet.create({
     color: "#666666",
   },
   summaryValue: {
-    width: 100,
+    width: 150,
     textAlign: "right",
+    fontSize: 10,
   },
   total: {
     marginTop: 15,
@@ -223,9 +237,9 @@ const InvoicePDF = ({
           .map((item, index) => (
             <View key={index} style={styles.tableRow}>
               <Text style={styles.description}>{item.description}</Text>
-              <Text style={styles.unitCost}>{item.unitCost}</Text>
+              <Text style={styles.unitCost}>{currency} {formatLargeNumber(item.unitCost)}</Text>
               <Text style={styles.qty}>{item.quantity}</Text>
-              <Text style={styles.amount}>{item.amount}</Text>
+              <Text style={styles.amount}>{currency} {formatLargeNumber(item.amount)}</Text>
             </View>
           ))}
       </View>
@@ -237,7 +251,7 @@ const InvoicePDF = ({
               {getTranslation("subtotal", settings?.language)}
             </Text>
             <Text style={styles.summaryValue}>
-              {currency} {subtotal.toFixed(2)}
+              {currency} {formatLargeNumber(subtotal)}
             </Text>
           </View>
         )}
@@ -257,7 +271,7 @@ const InvoicePDF = ({
               {getTranslation("taxAmount", settings?.language)}
             </Text>
             <Text style={styles.summaryValue}>
-              {currency} {tax.toFixed(2)}
+              {currency} {formatLargeNumber(tax)}
             </Text>
           </View>
         )}
@@ -268,7 +282,7 @@ const InvoicePDF = ({
               {getTranslation("shipping", settings?.language)}
             </Text>
             <Text style={styles.summaryValue}>
-              {currency} {shippingFee.toFixed(2)}
+              {currency} {formatLargeNumber(shippingFee)}
             </Text>
           </View>
         )}
@@ -278,7 +292,7 @@ const InvoicePDF = ({
             {getTranslation("invoiceTotal", settings?.language)}
           </Text>
           <Text style={[styles.summaryValue, styles.totalValue]}>
-            {currency} {total.toFixed(2)}
+            {currency} {formatLargeNumber(total)}
           </Text>
         </View>
       </View>
