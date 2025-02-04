@@ -403,7 +403,6 @@ ${contact.email || ""}`.trim()
               <div className="flex flex-wrap gap-2 justify-center sm:justify-end w-full sm:w-auto">
                 <Button
                   variant="outline"
-                  size="sm"
                   className="flex items-center gap-2"
                   onClick={() => setShowCompanySettings(true)}
                 >

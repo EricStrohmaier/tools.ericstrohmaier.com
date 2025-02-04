@@ -33,7 +33,6 @@ export function PDFDownloadButton({
       {({ url, loading }) => (
         <Button
           variant="outline"
-          size="sm"
           disabled={loading}
           onClick={() => {
             if (url) {
