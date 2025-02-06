@@ -6,9 +6,9 @@ import { getTranslation } from "@/utils/translations";
 
 const formatLargeNumber = (num: number): string => {
   // Format with commas and limit to 2 decimal places
-  return num.toLocaleString('en-US', {
+  return num.toLocaleString("en-US", {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   });
 };
 
@@ -112,9 +112,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   footer: {
-    marginTop: 'auto',
+    marginTop: "auto",
     paddingTop: 30,
-    paddingHorizontal: 30,
+    paddingHorizontal: 0,
   },
   notes: {
     marginTop: 20,
@@ -236,9 +236,13 @@ const InvoicePDF = ({
           .map((item, index) => (
             <View key={index} style={styles.tableRow}>
               <Text style={styles.description}>{item.description}</Text>
-              <Text style={styles.unitCost}>{currency} {formatLargeNumber(item.unitCost)}</Text>
+              <Text style={styles.unitCost}>
+                {currency} {formatLargeNumber(item.unitCost)}
+              </Text>
               <Text style={styles.qty}>{item.quantity}</Text>
-              <Text style={styles.amount}>{currency} {formatLargeNumber(item.amount)}</Text>
+              <Text style={styles.amount}>
+                {currency} {formatLargeNumber(item.amount)}
+              </Text>
             </View>
           ))}
       </View>
