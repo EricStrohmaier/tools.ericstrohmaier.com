@@ -112,10 +112,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   footer: {
-    position: "absolute",
-    bottom: 30,
-    left: 30,
-    right: 30,
+    marginTop: 'auto',
+    paddingTop: 30,
+    paddingHorizontal: 30,
   },
   notes: {
     marginTop: 20,
