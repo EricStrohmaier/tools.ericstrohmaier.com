@@ -16,7 +16,6 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { landingpageContent } from "@/config/landingpage";
 import { UserNav } from "../app/UserNav";
-import { Container } from "../ui/container";
 import { User } from "@/types/supabase";
 
 function CloseIcon(props: React.ComponentPropsWithoutRef<"svg">) {
@@ -313,42 +312,36 @@ export function Header({ user }: { user: User | null }) {
 
   return (
     <>
-      <header className="top-0 left-0 right-0 z-50 h-24  pt-6">
-        <Container className="w-full">
-          <div className="relative flex gap-4">
-            <div className="flex flex-1">
-              <Link href={landingpageContent.header.company.logoHref || "/"}>
-                <Image
-                  src={landingpageContent.header.company.logo}
-                  alt={`${landingpageContent.header.company.name} logo`}
-                  className="md:h-20 md:w-20 h-12 w-12 bg-transparent cursor-pointer"
-                />
-              </Link>
-            </div>
-            <div className="flex flex-1 justify-end md:justify-center">
-              <MobileNavigation className="pointer-events-auto md:hidden" />
-              <DesktopNavigation className="pointer-events-auto hidden md:block" />
-            </div>
-            <div className="flex justify-end md:flex-1">
-              {user ? (
-                <UserNav user={user} />
-              ) : (
-                landingpageContent.header.button.active && (
-                  <Button asChild variant="landingpageCTA" size="lg">
-                    <Link href={landingpageContent.header.button.href}>
-                      {landingpageContent.header.button.text}
-                    </Link>
-                  </Button>
-                )
-              )}
-
-              <Button asChild variant="ghost">
-                <Link href={"/signin"}>Sign in</Link>
-              </Button>
-            </div>
+      <div className="w-full max-w-7xl mx-auto px-3 md:px-6  pt-3 md:pt-6  space-y-4 md:space-y-6">
+        <div className="relative flex gap-4">
+          <div className="flex flex-1">
+            <Link href={landingpageContent.header.company.logoHref || "/"}>
+              <Image
+                src={landingpageContent.header.company.logo}
+                alt={`${landingpageContent.header.company.name} logo`}
+                className="md:h-20 md:w-20 h-11 w-11 bg-transparent cursor-pointer"
+              />
+            </Link>
           </div>
-        </Container>
-      </header>
+          <div className="flex flex-1 justify-end md:justify-center">
+            <MobileNavigation className="pointer-events-auto md:hidden" />
+            <DesktopNavigation className="pointer-events-auto hidden md:block" />
+          </div>
+          <div className="flex justify-end md:flex-1">
+            {user ? (
+              <UserNav user={user} />
+            ) : (
+              landingpageContent.header.button.active && (
+                <Button asChild variant="landingpageCTA" size="lg">
+                  <Link href={landingpageContent.header.button.href}>
+                    {landingpageContent.header.button.text}
+                  </Link>
+                </Button>
+              )
+            )}
+          </div>
+        </div>
+      </div>
     </>
   );
 }

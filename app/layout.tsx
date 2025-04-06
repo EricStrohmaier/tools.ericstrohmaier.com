@@ -7,6 +7,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Provider } from "@/components/Provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/landingpage/Foooter";
+import { InfoBanner } from "@/components/landingpage/InfoBanner";
 import { siteConfig } from "@/config/site";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -53,6 +54,7 @@ export default async function RootLayout({
       <body className={`h-full ${inter.className}`}>
         <Provider>
           <div className="flex flex-col w-full h-full bg-background">
+            <InfoBanner showOnlyWhenLoggedIn={false} user={user} />
             <Header user={user as any} />
             <main className="flex-auto">{children}</main>
           </div>

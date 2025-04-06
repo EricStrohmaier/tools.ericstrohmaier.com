@@ -19,7 +19,7 @@ export const landingpageContent = {
       logoHref: "/",
     },
     button: {
-      active: false,
+      active: true,
       text: "Get Started",
       href: "/signin",
     },
@@ -352,7 +352,7 @@ export const landingpageContent = {
       main: [{ name: "Support", href: "/contact" }],
       legal: [
         { name: "Terms of services", href: "/terms" },
-        { name: "Privacy policy", href: "/privacy" },
+        { name: "Privacy policy", href: "/privacy-policy" },
       ],
       products: [
         {
