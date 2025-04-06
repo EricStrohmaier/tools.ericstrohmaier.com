@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
         const { error: userUpdateError } = await supabase
           .from("users")
           .update({
-            stripe_id: stripeObject.customer as string,
+            // stripe_id: stripeObject.customer as string,
           })
           .eq("id", userId!);
 

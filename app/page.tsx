@@ -359,7 +359,7 @@ ${contact.email || ""}`.trim()
         </DialogContent>
       </Dialog>
       <div className="flex flex-col mb-6">
-        <h1 className="text-2xl font-semibold mb-2">Boring Invoice</h1>
+        <h1 className="text-2xl font-semibold mb-2">Invoice Generator</h1>
         <p className="text-sm text-gray-600">
           A simple invoice generator. Your data stays in your browser - no
           servers, no tracking.

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
-import { headers } from "next/headers";
 
 import { Header } from "@/components/landingpage/header";
 import { createClient } from "@/utils/supabase/server";
@@ -49,23 +48,12 @@ export default async function RootLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const headersList = headers();
-  const pathname = headersList.get("x-pathname") || "";
-
   return (
     <html lang="en">
-      <head>
-        <meta name="google-adsense-account" content="ca-pub-2706727138311810" />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2706727138311810"
-          crossOrigin="anonymous"
-        ></script>
-      </head>
       <body className={`h-full ${inter.className}`}>
         <Provider>
           <div className="flex flex-col w-full h-full bg-background">
-            {pathname !== "/" && <Header user={user as any} />}
+            <Header user={user as any} />
             <main className="flex-auto">{children}</main>
           </div>
           <Footer />

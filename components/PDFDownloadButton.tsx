@@ -1,23 +1,7 @@
 "use client";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { BlobProvider } from "@react-pdf/renderer";
 import { Download } from "lucide-react";
-
-const PDFDownloadLink = dynamic(
-  () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
-  {
-    ssr: false,
-    loading: () => (
-      <Button
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-        disabled
-      >
-        Preparing Download...
-      </Button>
-    ),
-  }
-);
 
 interface PDFDownloadButtonProps {
   document: React.ReactElement;

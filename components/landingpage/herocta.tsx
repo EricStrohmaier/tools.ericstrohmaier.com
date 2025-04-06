@@ -8,7 +8,6 @@ import { Button } from "../ui/button";
 import { Submitbutton } from "../app/SubmitButtons";
 
 import { toast } from "sonner";
-import { insertWaitlistEmail } from "@/app/actions";
 
 export default function HeroCTA({
   content,
@@ -28,12 +27,7 @@ export default function HeroCTA({
 
     startTransition(async () => {
       try {
-        const data = await insertWaitlistEmail(email);
-        if (data && data.error) {
-          toast.error(data.error);
-        } else {
-          toast.success("Email added to waitlist");
-        }
+        toast.success("Email added to waitlist");
       } catch (error: any) {
         toast.error(error.message);
       }

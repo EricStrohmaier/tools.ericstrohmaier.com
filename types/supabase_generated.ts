@@ -9,362 +9,244 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      companies: {
+      location_history: {
         Row: {
-          country: string | null
-          created_at: string
-          id: string
-          name: string | null
-          tagline: string | null
+          created_at: string | null
+          id: number
+          lat: number
+          lng: number
+          timestamp: string
+          user_id: string | null
         }
         Insert: {
-          country?: string | null
-          created_at?: string
-          id?: string
-          name?: string | null
-          tagline?: string | null
+          created_at?: string | null
+          id?: number
+          lat: number
+          lng: number
+          timestamp: string
+          user_id?: string | null
         }
         Update: {
-          country?: string | null
-          created_at?: string
-          id?: string
-          name?: string | null
-          tagline?: string | null
+          created_at?: string | null
+          id?: number
+          lat?: number
+          lng?: number
+          timestamp?: string
+          user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "companies_country_fkey"
-            columns: ["country"]
+            foreignKeyName: "location_history_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "countries"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
       }
-      countries: {
+      palettes: {
         Row: {
-          flag: string
+          colors: Json
+          created_at: string
+          full_palette: Json
           id: string
-          label: string
-          lat: string | null
-          lng: string | null
-          region: string
-          value: string
+          name: string
+          thumbnail: string
+          user_id: string
         }
         Insert: {
-          flag: string
+          colors: Json
+          created_at?: string
+          full_palette: Json
           id?: string
-          label: string
-          lat?: string | null
-          lng?: string | null
-          region: string
-          value: string
+          name: string
+          thumbnail: string
+          user_id: string
         }
         Update: {
-          flag?: string
+          colors?: Json
+          created_at?: string
+          full_palette?: Json
           id?: string
-          label?: string
-          lat?: string | null
-          lng?: string | null
-          region?: string
-          value?: string
+          name?: string
+          thumbnail?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "palettes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          client: string | null
+          created_at: string
+          description: string | null
+          hourly_rate: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          user_id: string
+        }
+        Insert: {
+          client?: string | null
+          created_at?: string
+          description?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          user_id: string
+        }
+        Update: {
+          client?: string | null
+          created_at?: string
+          description?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      surf_sessions: {
+        Row: {
+          created_at: string | null
+          date: string
+          duration: number
+          id: string
+          lat: number
+          lng: number
+          notes: string | null
+          rating: number
+          spot_id: string
+          spot_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          duration: number
+          id: string
+          lat: number
+          lng: number
+          notes?: string | null
+          rating: number
+          spot_id: string
+          spot_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          duration?: number
+          id?: string
+          lat?: number
+          lng?: number
+          notes?: string | null
+          rating?: number
+          spot_id?: string
+          spot_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "surf_sessions_spot_id_fkey"
+            columns: ["spot_id"]
+            isOneToOne: false
+            referencedRelation: "surf_spots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      surf_spots: {
+        Row: {
+          created_at: string | null
+          id: string
+          lat: number
+          lng: number
+          name: string
+          radius: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          lat: number
+          lng: number
+          name: string
+          radius: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          lat?: number
+          lng?: number
+          name?: string
+          radius?: number
+          updated_at?: string | null
         }
         Relationships: []
       }
-      favorites: {
-        Row: {
-          created_at: string
-          id: string
-          product_id: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          id: string
-          product_id?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          product_id?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "favorites_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "favorites_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      PowerPoint: {
-        Row: {
-          content: Json[] | null
-          createdAt: string
-          id: string
-          type: string
-          user_id: string | null
-        }
-        Insert: {
-          content?: Json[] | null
-          createdAt?: string
-          id: string
-          type: string
-          user_id?: string | null
-        }
-        Update: {
-          content?: Json[] | null
-          createdAt?: string
-          id?: string
-          type?: string
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "PowerPoint_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      product_attributes: {
-        Row: {
-          attribute_name: string
-          attribute_value: string
-          created_at: string
-          id: string
-          product_id: string | null
-        }
-        Insert: {
-          attribute_name: string
-          attribute_value: string
-          created_at?: string
-          id?: string
-          product_id?: string | null
-        }
-        Update: {
-          attribute_name?: string
-          attribute_value?: string
-          created_at?: string
-          id?: string
-          product_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_attributes_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      products: {
-        Row: {
-          category: Database["public"]["Enums"]["CategoryTypes"] | null
-          company_id: string | null
-          country: string | null
-          created_at: string
-          description: string | null
-          id: string
-          price: number | null
-          quantity: number | null
-          sku: string | null
-          small_description: string | null
-          title: string | null
-        }
-        Insert: {
-          category?: Database["public"]["Enums"]["CategoryTypes"] | null
-          company_id?: string | null
-          country?: string | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          price?: number | null
-          quantity?: number | null
-          sku?: string | null
-          small_description?: string | null
-          title?: string | null
-        }
-        Update: {
-          category?: Database["public"]["Enums"]["CategoryTypes"] | null
-          company_id?: string | null
-          country?: string | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          price?: number | null
-          quantity?: number | null
-          sku?: string | null
-          small_description?: string | null
-          title?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "products_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "products_country_fkey"
-            columns: ["country"]
-            isOneToOne: false
-            referencedRelation: "countries"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      reservations: {
-        Row: {
-          created_at: string
-          end_date: string
-          id: string
-          product_id: string | null
-          start_date: string
-          status: Database["public"]["Enums"]["Status"]
-          total_price: number
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          end_date: string
-          id?: string
-          product_id?: string | null
-          start_date: string
-          status: Database["public"]["Enums"]["Status"]
-          total_price: number
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          end_date?: string
-          id?: string
-          product_id?: string | null
-          start_date?: string
-          status?: Database["public"]["Enums"]["Status"]
-          total_price?: number
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "rentals_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "rentals_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      reviews: {
+      time_entries: {
         Row: {
           created_at: string
           description: string | null
-          helpful_count: number | null
+          duration: number | null
+          end_time: string | null
           id: string
-          product_id: string | null
-          rating: number | null
-          response: Json | null
-          title: string | null
-          unhelpful_count: number | null
-          user_id: string | null
-          verified_purchase: boolean | null
+          project_id: string
+          start_time: string
+          tags: string[] | null
+          user_id: string
         }
         Insert: {
           created_at?: string
           description?: string | null
-          helpful_count?: number | null
+          duration?: number | null
+          end_time?: string | null
           id?: string
-          product_id?: string | null
-          rating?: number | null
-          response?: Json | null
-          title?: string | null
-          unhelpful_count?: number | null
-          user_id?: string | null
-          verified_purchase?: boolean | null
+          project_id: string
+          start_time: string
+          tags?: string[] | null
+          user_id: string
         }
         Update: {
           created_at?: string
           description?: string | null
-          helpful_count?: number | null
+          duration?: number | null
+          end_time?: string | null
           id?: string
-          product_id?: string | null
-          rating?: number | null
-          response?: Json | null
-          title?: string | null
-          unhelpful_count?: number | null
-          user_id?: string | null
-          verified_purchase?: boolean | null
+          project_id?: string
+          start_time?: string
+          tags?: string[] | null
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "reviews_product_id_fkey"
-            columns: ["product_id"]
+            foreignKeyName: "time_entries_project_id_fkey"
+            columns: ["project_id"]
             isOneToOne: false
-            referencedRelation: "products"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "reviews_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_owns_companies: {
-        Row: {
-          company_id: string | null
-          created_at: string
-          id: string
-          permission_role: string | null
-          user_id: string | null
-        }
-        Insert: {
-          company_id?: string | null
-          created_at?: string
-          id?: string
-          permission_role?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          company_id?: string | null
-          created_at?: string
-          id?: string
-          permission_role?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "users_own_companies_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "users_own_companies_user_id_fkey"
+            foreignKeyName: "time_entries_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -374,52 +256,40 @@ export type Database = {
       }
       users: {
         Row: {
-          created_at: string
+          created_at: string | null
           email: string | null
-          full_name: string | null
+          gender: string | null
           id: string
-          stripe_connected: boolean | null
-          stripe_id: string | null
+          is_public: boolean | null
+          name: string | null
+          onboarding_completed: boolean | null
+          photo_url: string | null
+          updated_at: string | null
+          username: string | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           email?: string | null
-          full_name?: string | null
+          gender?: string | null
           id?: string
-          stripe_connected?: boolean | null
-          stripe_id?: string | null
+          is_public?: boolean | null
+          name?: string | null
+          onboarding_completed?: boolean | null
+          photo_url?: string | null
+          updated_at?: string | null
+          username?: string | null
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           email?: string | null
-          full_name?: string | null
+          gender?: string | null
           id?: string
-          stripe_connected?: boolean | null
-          stripe_id?: string | null
-        }
-        Relationships: []
-      }
-      waitlist: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-          interest_type: string | null
-          response_data: Json | null
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          interest_type?: string | null
-          response_data?: Json | null
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          interest_type?: string | null
-          response_data?: Json | null
+          is_public?: boolean | null
+          name?: string | null
+          onboarding_completed?: boolean | null
+          photo_url?: string | null
+          updated_at?: string | null
+          username?: string | null
         }
         Relationships: []
       }
@@ -431,8 +301,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      CategoryTypes: "template" | "uikit" | "icon"
-      Status: "pending" | "approved" | "declined"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -444,80 +313,95 @@ type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
-    | { schema: keyof Database },
+  | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+  | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+  ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+    Database[PublicTableNameOrOptions["schema"]]["Views"])
+  : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+    Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
-    ? R
-    : never
+  ? R
+  : never
   : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
+    PublicSchema["Views"])
+  ? (PublicSchema["Tables"] &
+    PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+      Row: infer R
+    }
+  ? R
+  : never
+  : never
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
+  | keyof PublicSchema["Tables"]
+  | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+  ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
-    }
-    ? I
-    : never
+    Insert: infer I
+  }
+  ? I
+  : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
+  ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+    Insert: infer I
+  }
+  ? I
+  : never
+  : never
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
+  | keyof PublicSchema["Tables"]
+  | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+  ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
-    }
-    ? U
-    : never
+    Update: infer U
+  }
+  ? U
+  : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
+  ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+    Update: infer U
+  }
+  ? U
+  : never
+  : never
 
 export type Enums<
   PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
-    | { schema: keyof Database },
+  | keyof PublicSchema["Enums"]
+  | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+  ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+  : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never
+  ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+  : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+  | keyof PublicSchema["CompositeTypes"]
+  | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+  ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+  : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+  ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : never

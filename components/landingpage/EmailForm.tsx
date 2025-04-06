@@ -5,7 +5,6 @@ import { Submitbutton } from "../app/SubmitButtons";
 import { toast } from "sonner";
 
 import { landingpageContent } from "@/config/landingpage";
-import { insertWaitlistEmail } from "@/app/actions";
 
 export default function EmailForm() {
   const [isPending, startTransition] = useTransition();
@@ -17,12 +16,7 @@ export default function EmailForm() {
 
     startTransition(async () => {
       try {
-        const data = await insertWaitlistEmail(email);
-        if (data && data.error) {
-          toast.error(data.error);
-        } else {
-          toast.success("Email added to waitlist");
-        }
+        toast.success("Email added to waitlist");
       } catch (error: any) {
         toast.error(error.message);
       }
