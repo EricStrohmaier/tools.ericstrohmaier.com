@@ -358,7 +358,7 @@ export const landingpageContent = {
         {
           name: "Time Tracker | with Chrome Extension",
           target: "_blank",
-          href: `/?ref=${siteConfig.domain}`,
+          href: `/dashboard?ref=${siteConfig.domain}`,
         },
         {
           name: "Personal Website",
