@@ -356,6 +356,11 @@ export const landingpageContent = {
       ],
       products: [
         {
+          name: "Time Tracker | with Chrome Extension",
+          target: "_blank",
+          href: `/?ref=${siteConfig.domain}`,
+        },
+        {
           name: "Personal Website",
           target: "_blank",
           href: `https://ericstrohmaier.com/?ref=${siteConfig.domain}`,
