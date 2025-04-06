@@ -23,7 +23,7 @@ export function UserNav({ user }: iAppProps) {
         <Button variant="ghost" className="relative h-12 w-12 rounded-full">
           <Avatar className="h-12 w-12">
             <AvatarImage src={user.metadata} alt="User Image" />
-            <AvatarFallback>{""}</AvatarFallback>
+            <AvatarFallback>{user.email[0].toUpperCase()}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

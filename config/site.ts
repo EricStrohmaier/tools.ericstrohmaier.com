@@ -22,4 +22,6 @@ export const siteConfig = {
     loginUrl: "/signin",
     callbackUrl: "/dashboard",
   },
+  extensionId: "",
+  extensionUrl: "https://chrome.google.com/webstore/detail/your-extension-id",
 };

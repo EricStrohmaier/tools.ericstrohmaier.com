@@ -25,6 +25,11 @@ export const landingpageContent = {
     },
     NavAndFooterLinks: [
       {
+        active: true,
+        text: "Tracker",
+        href: "/tracker",
+      },
+      {
         active: false,
         text: "Setup",
         href: "#setup",

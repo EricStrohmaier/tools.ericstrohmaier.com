@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ExternalLinkIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 
 interface InfoBannerProps {
   showOnlyWhenLoggedIn?: boolean;
@@ -26,64 +27,48 @@ export function InfoBanner({
   }
 
   return (
-    <>
-      <div className="w-full bg-accent/20 dark:bg-accent-foreground/10">
-        <div className="w-full max-w-7xl mx-auto px-3 md:px-6 py-2 flex items-center justify-between">
-          <div className="flex items-center space-x-2 mx-auto">
-            <span className="text-sm md:text-base font-medium">
-              Track your time efficiently with our Chrome extension!
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-accent text-accent-foreground hover:bg-accent/80 hidden sm:inline-flex py-3 px-2"
-              asChild
+    <div className="w-full bg-gradient-to-r from-accent/20 to-accent/10 dark:from-accent-foreground/20 dark:to-accent-foreground/10 border-b border-accent/10">
+      <div className="w-full max-w-7xl mx-auto px-3 md:px-6 py-3 flex flex-col sm:flex-row items-center justify-between">
+        <div className="flex items-center mb-2 sm:mb-0">
+          <span className="text-sm md:text-base font-medium">
+            Our time tracker is now live! Track your time efficiently across all
+            your projects.
+          </span>
+        </div>
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-accent text-accent-foreground hover:bg-accent/80 py-3 px-3"
+            asChild
+          >
+            <Link href="/tracker">View Time Tracker</Link>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-white text-accent-foreground hover:bg-gray-50 border-accent/20 py-3 px-3"
+            asChild
+          >
+            <Link
+              href={siteConfig.extensionUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center"
             >
-              <Link
-                href="https://chrome.google.com/webstore/detail/your-extension-id"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Get Extension
-                <ExternalLinkIcon className="inline-block ml-1 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+              Get Extension
+              <ExternalLinkIcon className="ml-1 h-4 w-4" />
+            </Link>
+          </Button>
           <button
             onClick={() => setIsVisible(false)}
-            className="p-1 rounded-full hover:bg-accent/30 transition-colors"
+            className="p-1.5 rounded-full hover:bg-accent/30 transition-colors"
             aria-label="Close banner"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
       </div>
-      <div className="w-full bg-accent/10 dark:bg-accent-foreground/10">
-        <div className="w-full max-w-7xl mx-auto px-3 md:px-6 py-2 flex items-center justify-between">
-          <div className="flex items-center space-x-2 mx-auto">
-            <span className="text-sm md:text-base font-medium">
-              Our Time tracker is now live check it out!
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-accent text-accent-foreground hover:bg-accent/80 hidden sm:inline-flex py-3 px-2"
-              asChild
-            >
-              <Link href="/dashboard" target="_blank" rel="noopener noreferrer">
-                Go to Dashboard
-              </Link>
-            </Button>
-          </div>
-          <button
-            onClick={() => setIsVisible(false)}
-            className="p-1 rounded-full hover:bg-accent/30 transition-colors"
-            aria-label="Close banner"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-    </>
+    </div>
   );
 }
