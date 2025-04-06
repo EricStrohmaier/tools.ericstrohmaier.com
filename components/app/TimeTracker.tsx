@@ -17,6 +17,7 @@ import {
   getProject,
   stopTimeTracking,
   updateTimeEntry,
+  getTimeEntry,
 } from "@/app/actions";
 
 import { toast } from "sonner";
@@ -35,42 +36,68 @@ export function TimeTracker({
   const [elapsedTime, setElapsedTime] = useState("0:00:00");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [timeEntryDetails, setTimeEntryDetails] = useState<any>(null);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
-    const fetchProjectDetails = async () => {
-      if (activeTimeEntry?.projectId) {
+    const fetchTimeEntryAndProjectDetails = async () => {
+      if (activeTimeEntry?.id) {
         try {
-          const projectData = await getProject(activeTimeEntry.projectId);
-          if (projectData) {
-            setProject(projectData);
+          // Fetch the time entry details to get the actual start time
+          const timeEntry = await getTimeEntry(activeTimeEntry.id);
+          if (timeEntry) {
+            setTimeEntryDetails(timeEntry);
+            setDescription(timeEntry.description || "");
+            
+            // Set the actual start time from the time entry
+            const actualStartTime = new Date(timeEntry.start_time);
+            setStartTime(actualStartTime);
+            
+            // Calculate initial elapsed time
+            const currentTime = new Date();
+            const diffInSeconds = Math.floor(
+              (currentTime.getTime() - actualStartTime.getTime()) / 1000
+            );
+
+            const hours = Math.floor(diffInSeconds / 3600);
+            const minutes = Math.floor((diffInSeconds % 3600) / 60);
+            const seconds = diffInSeconds % 60;
+
+            setElapsedTime(
+              `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+                .toString()
+                .padStart(2, "0")}`
+            );
+          }
+          
+          // Fetch project details if we have a project ID
+          if (activeTimeEntry.projectId) {
+            const projectData = await getProject(activeTimeEntry.projectId);
+            if (projectData) {
+              setProject(projectData);
+            }
           }
         } catch (error) {
-          console.error("Error fetching project:", error);
+          console.error("Error fetching time entry or project:", error);
         }
       } else {
         setProject(null);
         setStartTime(null);
+        setTimeEntryDetails(null);
         setElapsedTime("0:00:00");
       }
     };
 
-    fetchProjectDetails();
+    fetchTimeEntryAndProjectDetails();
 
     // Start the timer if we have an active time entry
-    if (activeTimeEntry) {
-      // Initialize with current time
-      if (!startTime) {
-        setStartTime(new Date());
-      }
-
+    if (activeTimeEntry && startTime) {
       // Update the timer every second
       intervalId = setInterval(() => {
         const currentTime = new Date();
-        const start = startTime || currentTime; // Fallback to current time if startTime is null
         const diffInSeconds = Math.floor(
-          (currentTime.getTime() - start.getTime()) / 1000
+          (currentTime.getTime() - startTime.getTime()) / 1000
         );
 
         const hours = Math.floor(diffInSeconds / 3600);
@@ -141,7 +168,7 @@ export function TimeTracker({
 
   return (
     <Card className="w-full">
-      <CardHeader className="bg-primary text-primary-foreground">
+      <CardHeader className="bg-primary rounded-t-md text-primary-foreground">
         <div className="flex justify-between items-center">
           <div>
             <CardTitle>Currently Tracking</CardTitle>

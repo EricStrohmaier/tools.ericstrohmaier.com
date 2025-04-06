@@ -20,6 +20,16 @@ export async function handleRequest(
   e.preventDefault();
 
   const formData = new FormData(e.currentTarget);
+  
+  // Check if the user is coming from the extension
+  const urlParams = new URLSearchParams(window.location.search);
+  const isExtension = urlParams.get("extension") === "true";
+  
+  // If coming from extension, add it to the form data
+  if (isExtension) {
+    formData.append("extension", "true");
+  }
+  
   const hostname = window.location.hostname; // Get hostname from client-side
   const redirectUrl: string = await requestFunc(formData, hostname, signuptype);
 
@@ -40,6 +50,15 @@ export async function handleEmailRequest(
   // Create FormData and append the email
   const formData = new FormData();
   formData.append("email", email);
+  
+  // Check if the user is coming from the extension
+  const urlParams = new URLSearchParams(window.location.search);
+  const isExtension = urlParams.get("extension") === "true";
+  
+  // If coming from extension, add it to the form data
+  if (isExtension) {
+    formData.append("extension", "true");
+  }
 
   // Get hostname
   const hostname = window.location.hostname;
@@ -64,13 +83,23 @@ export async function signInWithOAuth(
   const formData = new FormData(e.currentTarget);
   const provider = String(formData.get("provider")).trim() as Provider;
 
+  // Check if the user is coming from the extension
+  const urlParams = new URLSearchParams(window.location.search);
+  const isExtension = urlParams.get("extension") === "true";
+
   // Create client-side supabase client and call signInWithOAuth
   const supabase = createClient();
   const redirectURL = getURL("/api/auth/callback");
+  
+  // Add extension parameter to query params if needed
+  const queryParams: Record<string, string> = {};
+  if (signuptype) queryParams.signuptype = signuptype;
+  if (isExtension) queryParams.extension = "true";
+  
   await supabase.auth.signInWithOAuth({
     provider: provider,
     options: {
-      queryParams: signuptype ? { signuptype: signuptype } : {},
+      queryParams,
       redirectTo: redirectURL,
     },
   });

@@ -144,11 +144,13 @@ export const getTimeEntries = async (filters?: TimeFilterOptions): Promise<TimeE
     .select("*");
 
   if (filters?.startDate) {
-    query = query.gte("start_time", filters.startDate);
+    // Add T00:00:00 to ensure we get the start of the day in local timezone
+    query = query.gte("start_time", `${filters.startDate}T00:00:00`);
   }
 
   if (filters?.endDate) {
-    query = query.lte("start_time", filters.endDate);
+    // Add T23:59:59 to ensure we get the end of the day in local timezone
+    query = query.lte("start_time", `${filters.endDate}T23:59:59`);
   }
 
   if (filters?.projectId) {
@@ -246,12 +248,15 @@ export const deleteTimeEntry = async (id: string): Promise<{ success?: boolean; 
 };
 
 export const startTimeTracking = async (projectId: string, description?: string, tags?: string[]): Promise<{ data?: TimeEntry; error?: string }> => {
-  const now = new Date().toISOString();
+  // Store the date with timezone information preserved
+  const now = new Date();
+  // Convert to ISO string but store the timezone offset
+  const nowWithTimezone = now.toISOString();
 
   return createTimeEntry({
     project_id: projectId,
     description,
-    start_time: now,
+    start_time: nowWithTimezone,
     tags
   });
 };
@@ -267,13 +272,41 @@ export const stopTimeTracking = async (timeEntryId: string): Promise<{ data?: Ti
     return { error: "Time entry already stopped" };
   }
 
-  const now = new Date().toISOString();
+  // Store the date with timezone information preserved
+  const now = new Date();
+  const nowWithTimezone = now.toISOString();
+  
+  // Parse the start time correctly preserving timezone
   const startTime = new Date(timeEntry.start_time);
-  const endTime = new Date(now);
+  const endTime = now;
   const durationInSeconds = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
 
   return updateTimeEntry(timeEntryId, {
-    end_time: now,
+    end_time: nowWithTimezone,
     duration: durationInSeconds
   });
+};
+
+// Create a time entry manually with specified duration
+export const createManualTimeEntry = async (timeEntry: Omit<TimeEntry, "id" | "created_at" | "user_id">): Promise<{ data?: TimeEntry; error?: string }> => {
+  const supabase = createClient();
+  const user = await getUser();
+
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  const { data, error } = await supabase
+    .from("time_entries")
+    .insert([{ ...timeEntry, user_id: user.id }])
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error creating time entry:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  return { data: data as TimeEntry };
 };

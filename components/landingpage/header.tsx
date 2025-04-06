@@ -341,11 +341,10 @@ export function Header({ user }: { user: User | null }) {
                   </Button>
                 )
               )}
-              {isAbout && (
-                <Button asChild variant="ghost">
-                  <Link href={"/signin"}>Sign in</Link>
-                </Button>
-              )}
+
+              <Button asChild variant="ghost">
+                <Link href={"/signin"}>Sign in</Link>
+              </Button>
             </div>
           </div>
         </Container>

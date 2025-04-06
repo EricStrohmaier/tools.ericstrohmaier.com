@@ -2,7 +2,7 @@
 
 // type Price = Tables<"prices">;
 
-export const getURL = (path: string = "", subdomain: string = "") => {
+export const getURL = (path: string = "", subdomain: string = "", isExtension: boolean = false) => {
   // Check if NEXT_PUBLIC_SITE_URL is set and non-empty. Set this to your site URL in production env.
   let url =
     process?.env?.NEXT_PUBLIC_GET_URL &&
@@ -23,8 +23,10 @@ export const getURL = (path: string = "", subdomain: string = "") => {
   if (subdomain && !url.includes(`${subdomain}.`)) {
     url = url.replace("://", `://${subdomain}.`);
   }
-
-  return path ? `${url}/${path}` : url;
+  
+  // Add extension parameter if coming from extension
+  const finalPath = path ? `${url}/${path}` : url;
+  return isExtension ? `${finalPath}${finalPath.includes('?') ? '&' : '?'}extension=true` : finalPath;
 };
 
 export const postData = async ({
@@ -80,7 +82,8 @@ const getToastRedirect = (
   toastName: string,
   toastDescription: string = "",
   disableButton: boolean = false,
-  arbitraryParams: string = ""
+  arbitraryParams: string = "",
+  isExtension: boolean = false
 ): string => {
   const [nameKey, descriptionKey] = toastKeyMap[toastType];
 
@@ -95,6 +98,11 @@ const getToastRedirect = (
   if (disableButton) {
     redirectPath += `&disable_button=true`;
   }
+  
+  // Add extension parameter if coming from extension
+  if (isExtension) {
+    redirectPath += `&extension=true`;
+  }
 
   if (arbitraryParams) {
     redirectPath += `&${arbitraryParams}`;
@@ -108,7 +116,8 @@ export const getStatusRedirect = (
   statusName: string,
   statusDescription: string = "",
   disableButton: boolean = false,
-  arbitraryParams: string = ""
+  arbitraryParams: string = "",
+  isExtension: boolean = false
 ) =>
   getToastRedirect(
     path,
@@ -116,7 +125,8 @@ export const getStatusRedirect = (
     statusName,
     statusDescription,
     disableButton,
-    arbitraryParams
+    arbitraryParams,
+    isExtension
   );
 
 export const getErrorRedirect = (
@@ -124,7 +134,8 @@ export const getErrorRedirect = (
   errorName: string,
   errorDescription: string = "",
   disableButton: boolean = false,
-  arbitraryParams: string = ""
+  arbitraryParams: string = "",
+  isExtension: boolean = false
 ) =>
   getToastRedirect(
     path,
@@ -132,5 +143,6 @@ export const getErrorRedirect = (
     errorName,
     errorDescription,
     disableButton,
-    arbitraryParams
+    arbitraryParams,
+    isExtension
   );

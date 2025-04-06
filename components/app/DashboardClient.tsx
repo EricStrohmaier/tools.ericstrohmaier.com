@@ -6,9 +6,10 @@ import { ProjectCard } from "./ProjectCard";
 import { ProjectForm } from "./ProjectForm";
 import { TimeTracker } from "./TimeTracker";
 import { TimeEntryList } from "./TimeEntryList";
+import { ManualTimeEntryForm } from "./ManualTimeEntryForm";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Clock } from "lucide-react";
 
 interface DashboardClientProps {
   initialProjects: Project[];
@@ -112,6 +113,13 @@ export function DashboardClient({ initialProjects }: DashboardClientProps) {
         </TabsContent>
 
         <TabsContent value="time-entries">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Time Entries</h2>
+            <ManualTimeEntryForm 
+              projects={projects} 
+              onTimeEntryAdded={() => window.location.reload()} 
+            />
+          </div>
           <TimeEntryList />
         </TabsContent>
       </Tabs>

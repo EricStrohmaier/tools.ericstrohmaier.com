@@ -34,7 +34,11 @@ export async function signOut() {
 export async function signInWithEmail(formData: FormData) {
   // const subdomain = hostname.split(".")[0]; // Extract the subdomain
   const cookieStore = cookies();
-  const callbackURL = getURL("/api/auth/confirm");
+  
+  // Check if the user is coming from the extension
+  const isExtension = formData.get("extension") === "true";
+  
+  const callbackURL = getURL("/api/auth/confirm", "", isExtension);
 
   const email = String(formData.get("email")).trim();
   let redirectPath: string;
@@ -208,6 +212,8 @@ export async function signInWithPassword(formData: FormData) {
   const cookieStore = cookies();
   const email = String(formData.get("email")).trim();
   const password = String(formData.get("password")).trim();
+  // Check if the user is coming from the extension
+  const isExtension = formData.get("extension") === "true";
   let redirectPath: string;
 
   const supabase = createClient();
@@ -220,16 +226,25 @@ export async function signInWithPassword(formData: FormData) {
     redirectPath = getErrorRedirect(
       "/signin/password_signin",
       "Sign in failed.",
-      error.message
+      error.message,
+      false,
+      "",
+      isExtension
     );
   } else if (data.user) {
     cookieStore.set("preferredSignInView", "password_signin", { path: "/" });
-    redirectPath = getStatusRedirect("/", "Success!", "You are now signed in.");
+    // If coming from extension, redirect to extension success page
+    redirectPath = isExtension 
+      ? getStatusRedirect("/extension-auth-success", "Success!", "You are now signed in.", false, "", true)
+      : getStatusRedirect("/", "Success!", "You are now signed in.");
   } else {
     redirectPath = getErrorRedirect(
       "/signin/password_signin",
       "Hmm... Something went wrong.",
-      "You could not be signed in."
+      "You could not be signed in.",
+      false,
+      "",
+      isExtension
     );
   }
 
@@ -238,8 +253,11 @@ export async function signInWithPassword(formData: FormData) {
 
 export async function signUp(formData: FormData, hostname: string) {
   // const subdomain = hostname.split(".")[0]; // Extract the subdomain
+  
+  // Check if the user is coming from the extension
+  const isExtension = formData.get("extension") === "true";
 
-  const callbackURL = getURL("/api/auth/confirm");
+  const callbackURL = getURL("/api/auth/confirm", "", isExtension);
 
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password")).trim();
