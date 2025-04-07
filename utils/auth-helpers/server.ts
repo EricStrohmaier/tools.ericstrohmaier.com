@@ -34,10 +34,10 @@ export async function signOut() {
 export async function signInWithEmail(formData: FormData) {
   // const subdomain = hostname.split(".")[0]; // Extract the subdomain
   const cookieStore = cookies();
-  
+
   // Check if the user is coming from the extension
   const isExtension = formData.get("extension") === "true";
-  
+
   const callbackURL = getURL("/api/auth/confirm", "", isExtension);
 
   const email = String(formData.get("email")).trim();
@@ -45,7 +45,7 @@ export async function signInWithEmail(formData: FormData) {
 
   if (!isValidEmail(email) || email === "") {
     return (redirectPath = getErrorRedirect(
-      `/signin/email_signin`,
+      `/signin`,
       "Invalid email address.",
       "Please try again."
     ));
@@ -73,7 +73,7 @@ export async function signInWithEmail(formData: FormData) {
 
   if (error) {
     redirectPath = getErrorRedirect(
-      `/signin/email_signin`,
+      `/signin`,
       "You could not be signed in.",
       error.message
     );
@@ -84,14 +84,14 @@ export async function signInWithEmail(formData: FormData) {
     );
 
     redirectPath = getStatusRedirect(
-      `/signin/email_signin`,
+      `/signin`,
       "Success!",
       "Please check your email for a magic link. You may now close this tab.",
       true
     );
   } else {
     redirectPath = getErrorRedirect(
-      `/signin/email_signin`,
+      `/signin`,
       "Hmm... Something went wrong.",
       "You could not be signed in."
     );
@@ -113,7 +113,7 @@ export async function signInWithEmailCode(
 
   if (!isValidEmail(email) || email === "") {
     return (redirectPath = getErrorRedirect(
-      `/signin/email_signin`,
+      `/signin`,
       "Invalid email address.",
       "Please try again."
     ));
@@ -131,7 +131,7 @@ export async function signInWithEmailCode(
 
   if (error) {
     redirectPath = getErrorRedirect(
-      `/signin/email_signin`,
+      `/signin`,
       "You could not be signed in.",
       error.message
     );
@@ -142,14 +142,14 @@ export async function signInWithEmailCode(
     );
 
     redirectPath = getStatusRedirect(
-      `/signin/email_signin`,
+      `/signin`,
       "Success!",
       "Please check your email for a magic link. You may now close this tab.",
       true
     );
   } else {
     redirectPath = getErrorRedirect(
-      `/signin/email_signin`,
+      `/signin`,
       "Hmm... Something went wrong.",
       "You could not be signed in."
     );
@@ -172,7 +172,7 @@ export async function requestPasswordUpdate(
 
   if (!isValidEmail(email)) {
     redirectPath = getErrorRedirect(
-      "/signin/forgot_password",
+      "/forgot_password",
       "Invalid email address.",
       "Please try again."
     );
@@ -186,20 +186,20 @@ export async function requestPasswordUpdate(
 
   if (error) {
     redirectPath = getErrorRedirect(
-      "/signin/forgot_password",
+      "/forgot_password",
       error.message,
       "Please try again."
     );
   } else if (data) {
     redirectPath = getStatusRedirect(
-      "/signin/forgot_password",
+      "/forgot_password",
       "Success!",
       "Please check your email for a password reset link. You may now close this tab.",
       true
     );
   } else {
     redirectPath = getErrorRedirect(
-      "/signin/forgot_password",
+      "/forgot_password",
       "Hmm... Something went wrong.",
       "Password reset email could not be sent."
     );
@@ -224,7 +224,7 @@ export async function signInWithPassword(formData: FormData) {
 
   if (error) {
     redirectPath = getErrorRedirect(
-      "/signin/password_signin",
+      "/signin",
       "Sign in failed.",
       error.message,
       false,
@@ -234,12 +234,12 @@ export async function signInWithPassword(formData: FormData) {
   } else if (data.user) {
     cookieStore.set("preferredSignInView", "password_signin", { path: "/" });
     // If coming from extension, redirect to extension success page
-    redirectPath = isExtension 
+    redirectPath = isExtension
       ? getStatusRedirect("/extension-auth-success", "Success!", "You are now signed in.", false, "", true)
       : getStatusRedirect("/", "Success!", "You are now signed in.");
   } else {
     redirectPath = getErrorRedirect(
-      "/signin/password_signin",
+      "/signin",
       "Hmm... Something went wrong.",
       "You could not be signed in.",
       false,
@@ -253,7 +253,7 @@ export async function signInWithPassword(formData: FormData) {
 
 export async function signUp(formData: FormData, hostname: string) {
   // const subdomain = hostname.split(".")[0]; // Extract the subdomain
-  
+
   // Check if the user is coming from the extension
   const isExtension = formData.get("extension") === "true";
 
@@ -265,13 +265,13 @@ export async function signUp(formData: FormData, hostname: string) {
 
   if (email === "") {
     return (redirectPath = getErrorRedirect(
-      "/signin/signup",
+      "/signup",
       "Email address is required.",
       "Please provide your email address."
     ));
   } else if (!isValidEmail(email)) {
     return (redirectPath = getErrorRedirect(
-      "/signin/signup",
+      "/signup",
       "Invalid email address.",
       "Please try again."
     ));
@@ -289,7 +289,7 @@ export async function signUp(formData: FormData, hostname: string) {
 
   if (error) {
     redirectPath = getErrorRedirect(
-      "/signin/signup",
+      "/signup",
       "Sign up failed.",
       error.message
     );
@@ -301,7 +301,7 @@ export async function signUp(formData: FormData, hostname: string) {
     data.user.identities.length == 0
   ) {
     redirectPath = getErrorRedirect(
-      "/signin/signup",
+      "/signup",
       "Sign up failed.",
       "There is already an account associated with this email address. Try resetting your password."
     );
@@ -313,7 +313,7 @@ export async function signUp(formData: FormData, hostname: string) {
     );
   } else {
     redirectPath = getErrorRedirect(
-      "/signin/signup",
+      "/signup",
       "Hmm... Something went wrong.",
       "You could not be signed up."
     );
@@ -330,7 +330,7 @@ export async function updatePassword(formData: FormData) {
   // Check that the password and confirmation match
   if (password !== passwordConfirm) {
     redirectPath = getErrorRedirect(
-      "/signin/update_password",
+      "/update_password",
       "Your password could not be updated.",
       "Passwords do not match."
     );
@@ -343,7 +343,7 @@ export async function updatePassword(formData: FormData) {
 
   if (error) {
     redirectPath = getErrorRedirect(
-      "/signin/update_password",
+      "/update_password",
       "Your password could not be updated.",
       error.message
     );
@@ -355,7 +355,7 @@ export async function updatePassword(formData: FormData) {
     );
   } else {
     redirectPath = getErrorRedirect(
-      "/signin/update_password",
+      "/update_password",
       "Hmm... Something went wrong.",
       "Your password could not be updated."
     );
@@ -371,7 +371,7 @@ export async function updateEmail(formData: FormData) {
   // Check that the email is valid
   if (!isValidEmail(newEmail)) {
     return getErrorRedirect(
-      "/account",
+      "/update_email",
       "Your email could not be updated.",
       "Invalid email address."
     );
@@ -392,13 +392,13 @@ export async function updateEmail(formData: FormData) {
 
   if (error) {
     return getErrorRedirect(
-      "/account",
+      "/update_email",
       "Your email could not be updated.",
       error.message
     );
   } else {
     return getStatusRedirect(
-      "/account",
+      "/update_email",
       "Confirmation emails sent.",
       `You will need to confirm the update by clicking the links sent to both the old and new email addresses.`
     );
@@ -416,19 +416,19 @@ export async function updateName(formData: FormData) {
 
   if (error) {
     return getErrorRedirect(
-      "/account",
+      "/update_name",
       "Your name could not be updated.",
       error.message
     );
   } else if (data.user) {
     return getStatusRedirect(
-      "/account",
+      "/update_name",
       "Success!",
       "Your name has been updated."
     );
   } else {
     return getErrorRedirect(
-      "/account",
+      "/update_name",
       "Hmm... Something went wrong.",
       "Your name could not be updated."
     );
