@@ -19,8 +19,35 @@ export default async function middleware(req: NextRequest) {
   req.headers.set("x-pathname", req.nextUrl.pathname);
   req.headers.set("x-url", req.url);
   
-  // Check if this is a signin request from the extension
+  // Handle CORS for API routes
   const url = new URL(req.url);
+  const isApiRoute = url.pathname.startsWith('/api/');
+  
+  // For API requests, handle CORS
+  if (isApiRoute) {
+    // Handle preflight OPTIONS request
+    if (req.method === 'OPTIONS') {
+      return new NextResponse(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          'Access-Control-Max-Age': '86400',
+        },
+      });
+    }
+    
+    // For actual API requests, continue to the API route but add CORS headers
+    const response = NextResponse.next();
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    return response;
+  }
+  
+  // Check if this is a signin request from the extension
   const isExtensionAuth = url.pathname === "/signin" && url.searchParams.get("extension") === "true";
   
   if (isExtensionAuth) {
