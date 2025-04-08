@@ -1,11 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { BlobProvider } from "@react-pdf/renderer";
 import { FileText } from "lucide-react";
 import { TimeEntry, Project } from "@/app/actions";
 import { DateRange } from "react-day-picker";
 import TimeTrackingPDF from "./TimeTrackingPDF";
+import dynamic from "next/dynamic";
+
+// Dynamically import BlobProvider to ensure it only loads on the client
+const DynamicBlobProvider = dynamic(
+  () => import("@react-pdf/renderer").then((mod) => mod.BlobProvider),
+  { ssr: false }
+);
 
 interface TimeTrackingPDFButtonProps {
   timeEntries: TimeEntry[];
@@ -25,13 +31,15 @@ export function TimeTrackingPDFButton({
   disabled = false,
 }: TimeTrackingPDFButtonProps) {
   const generateFileName = () => {
-    const dateStr = new Date().toISOString().split('T')[0];
-    const projectStr = projectName ? `-${projectName.replace(/\s+/g, "-")}` : "";
+    const dateStr = new Date().toISOString().split("T")[0];
+    const projectStr = projectName
+      ? `-${projectName.replace(/\s+/g, "-")}`
+      : "";
     return `time-report${projectStr}-${dateStr}.pdf`;
   };
 
   return (
-    <BlobProvider
+    <DynamicBlobProvider
       document={
         <TimeTrackingPDF
           timeEntries={timeEntries}
@@ -59,6 +67,6 @@ export function TimeTrackingPDFButton({
           {loading ? "Generating..." : "Export PDF"}
         </Button>
       )}
-    </BlobProvider>
+    </DynamicBlobProvider>
   );
 }

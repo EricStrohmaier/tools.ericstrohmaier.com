@@ -1,7 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { BlobProvider } from "@react-pdf/renderer";
 import { Download } from "lucide-react";
+import dynamic from "next/dynamic";
+
+// Dynamically import BlobProvider to ensure it only loads on the client
+const DynamicBlobProvider = dynamic(
+  () => import("@react-pdf/renderer").then((mod) => mod.BlobProvider),
+  { ssr: false }
+);
 
 interface PDFDownloadButtonProps {
   document: React.ReactElement;
@@ -13,7 +19,7 @@ export function PDFDownloadButton({
   fileName,
 }: PDFDownloadButtonProps) {
   return (
-    <BlobProvider document={document}>
+    <DynamicBlobProvider document={document}>
       {({ url, loading }) => (
         <Button
           variant="outline"
@@ -31,6 +37,6 @@ export function PDFDownloadButton({
           {loading ? "Preparing Download..." : "Export PDF"}
         </Button>
       )}
-    </BlobProvider>
+    </DynamicBlobProvider>
   );
 }
