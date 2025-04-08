@@ -23,5 +23,5 @@ export const siteConfig = {
     callbackUrl: "/dashboard",
   },
   extensionId: "",
-  extensionUrl: "https://chrome.google.com/webstore/detail/your-extension-id",
+  extensionUrl: "https://chromewebstore.google.com/detail/ofibhcbcleplglpnapjgccfbhdmfeeap?utm_source=item-share-cb",
 };
