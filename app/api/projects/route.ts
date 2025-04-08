@@ -1,19 +1,10 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { getUser, createProject } from "@/app/actions";
-import { corsMiddleware } from "@/app/api/cors";
-
-// Handle OPTIONS requests for CORS preflight
-export async function OPTIONS(request: NextRequest) {
-  return corsMiddleware(request);
-}
+import { withCors, corsResponse } from "@/app/api/cors-middleware";
 
 // GET /api/projects - Get all projects for the authenticated user
-export async function GET(request: NextRequest) {
-  // Handle preflight OPTIONS request via the OPTIONS function
-  if (request.method === 'OPTIONS') {
-    return corsMiddleware(request);
-  }
+export const GET = withCors(async (request: NextRequest) => {
   try {
     const user = await getUser();
 
@@ -37,47 +28,18 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("Error fetching projects:", error);
-      // Get the origin from the request headers
-      const origin = request.headers.get('origin') || '*';
-      
-      return new Response(JSON.stringify({ error: "Failed to fetch projects" }), {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": origin,
-          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-          "Access-Control-Allow-Credentials": "true",
-        },
-      });
+      return corsResponse({ error: "Failed to fetch projects" }, 500);
     }
 
-    // Get the origin from the request headers
-    const origin = request.headers.get('origin') || '*';
-    
-    return new Response(JSON.stringify(projects), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": origin,
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        "Access-Control-Allow-Credentials": "true",
-      },
-    });
+    return corsResponse(projects, 200);
   } catch (error) {
     console.error("Error in projects API:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return corsResponse({ error: "Internal server error" }, 500);
   }
-}
+});
 
 // POST /api/projects - Create a new project
-export async function POST(request: NextRequest) {
+export const POST = withCors(async (request: NextRequest) => {
   try {
     const user = await getUser();
 
@@ -94,12 +56,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!body.name) {
-      return new Response(JSON.stringify({ error: "Project name is required" }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return corsResponse({ error: "Project name is required" }, 400);
     }
 
     const result = await createProject({
@@ -111,27 +68,12 @@ export async function POST(request: NextRequest) {
     });
 
     if (result.error) {
-      return new Response(JSON.stringify({ error: result.error }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return corsResponse({ error: result.error }, 400);
     }
 
-    return new Response(JSON.stringify(result.data), {
-      status: 201,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return corsResponse(result.data, 201);
   } catch (error) {
     console.error("Error creating project:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return corsResponse({ error: "Internal server error" }, 500);
   }
-}
+});
