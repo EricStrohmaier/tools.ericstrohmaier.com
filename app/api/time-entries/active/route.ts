@@ -1,12 +1,29 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getTimeEntries, getUser } from "@/app/actions";
+import { corsMiddleware } from "@/app/api/cors";
 
-export async function GET() {
+export async function OPTIONS(request: NextRequest) {
+  return corsMiddleware(request);
+}
+
+export async function GET(request: NextRequest) {
+  // Handle preflight OPTIONS request via the OPTIONS function
+  if (request.method === 'OPTIONS') {
+    return corsMiddleware(request);
+  }
   try {
     const user = await getUser();
     
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      
+      // Add CORS headers
+      response.headers.set('Access-Control-Allow-Origin', request.headers.get('origin') || '*');
+      response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      response.headers.set('Access-Control-Allow-Credentials', 'true');
+      
+      return response;
     }
     
     // Get all time entries and find the active one (no end_time)
@@ -14,12 +31,36 @@ export async function GET() {
     const activeTimeEntry = timeEntries.find(entry => !entry.end_time);
     
     if (!activeTimeEntry) {
-      return NextResponse.json(null);
+      const response = NextResponse.json(null);
+      
+      // Add CORS headers
+      response.headers.set('Access-Control-Allow-Origin', request.headers.get('origin') || '*');
+      response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      response.headers.set('Access-Control-Allow-Credentials', 'true');
+      
+      return response;
     }
     
-    return NextResponse.json(activeTimeEntry);
+    const response = NextResponse.json(activeTimeEntry);
+      
+      // Add CORS headers
+      response.headers.set('Access-Control-Allow-Origin', request.headers.get('origin') || '*');
+      response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      response.headers.set('Access-Control-Allow-Credentials', 'true');
+      
+      return response;
   } catch (error) {
     console.error("Error getting active time entry:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const response = NextResponse.json({ error: "Internal server error" }, { status: 500 });
+      
+      // Add CORS headers
+      response.headers.set('Access-Control-Allow-Origin', request.headers.get('origin') || '*');
+      response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      response.headers.set('Access-Control-Allow-Credentials', 'true');
+      
+      return response;
   }
 }

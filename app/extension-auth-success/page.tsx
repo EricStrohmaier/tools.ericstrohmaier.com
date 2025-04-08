@@ -7,29 +7,57 @@ import { CheckCircle } from "lucide-react";
 
 export default function ExtensionAuthSuccess() {
   useEffect(() => {
-    // Send a message to the Chrome extension that authentication was successful
-    if (window.opener) {
-      // If opened in a popup by the extension
-      window.opener.postMessage({ type: "AUTH_SUCCESS" }, "*");
-      // Close the popup after sending the message
-      setTimeout(() => window.close(), 2000);
-    } else {
-      // If not in a popup, try to communicate with the extension directly
+    console.log("Extension auth success page loaded");
+    
+    // Function to send success message
+    const sendSuccessMessage = () => {
+      // Try multiple communication methods
+      
+      // Method 1: postMessage to opener (if opened as popup)
+      if (window.opener) {
+        console.log("Sending postMessage to opener");
+        // Send to any origin to ensure it works across HTTP/HTTPS
+        window.opener.postMessage({ type: "AUTH_SUCCESS" }, "*");
+      }
+      
+      // Method 2: Try chrome extension API
       try {
-        // Only access chrome API if it exists in the window object
-        if (
-          typeof window !== "undefined" &&
-          "chrome" in window &&
-          window.chrome
-        ) {
+        if (typeof window !== "undefined" && "chrome" in window && window.chrome) {
+          console.log("Attempting to use chrome.runtime.sendMessage");
           // @ts-ignore - Chrome extension API might not be recognized by TypeScript
-          window.chrome.runtime.sendMessage({ type: "AUTH_SUCCESS" });
+          window.chrome.runtime.sendMessage({ type: "AUTH_SUCCESS" }, (response) => {
+            console.log("Chrome runtime message response:", response);
+          });
         }
       } catch (error) {
-        // Chrome API not available, this is expected when not in extension context
-        console.log("Not in extension context, cannot use chrome API");
+        console.log("Chrome API error:", error);
       }
-    }
+      
+      // Method 3: Broadcast to all potential listeners
+      try {
+        console.log("Broadcasting message to window");
+        window.postMessage({ type: "AUTH_SUCCESS", source: "tools_auth_page" }, "*");
+      } catch (error) {
+        console.log("Broadcast error:", error);
+      }
+    };
+    
+    // Send message immediately
+    sendSuccessMessage();
+    
+    // And also send after a short delay to ensure page is fully loaded
+    const messageTimer = setTimeout(sendSuccessMessage, 500);
+    
+    // Set up auto-close timer
+    const closeTimer = setTimeout(() => {
+      console.log("Auto-closing window");
+      window.close();
+    }, 3000);
+    
+    return () => {
+      clearTimeout(messageTimer);
+      clearTimeout(closeTimer);
+    };
   }, []);
 
   return (

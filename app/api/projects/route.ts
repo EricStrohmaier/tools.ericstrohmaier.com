@@ -1,9 +1,19 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { getUser, createProject } from "@/app/actions";
+import { corsMiddleware } from "@/app/api/cors";
+
+// Handle OPTIONS requests for CORS preflight
+export async function OPTIONS(request: NextRequest) {
+  return corsMiddleware(request);
+}
 
 // GET /api/projects - Get all projects for the authenticated user
 export async function GET(request: NextRequest) {
+  // Handle preflight OPTIONS request via the OPTIONS function
+  if (request.method === 'OPTIONS') {
+    return corsMiddleware(request);
+  }
   try {
     const user = await getUser();
 
