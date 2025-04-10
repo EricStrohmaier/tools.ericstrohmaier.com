@@ -12,13 +12,19 @@ import SignUpCard from "@/components/Authentication/components/SignUpCard";
 import ForgotPasswordCard from "@/components/Authentication/components/ForgotPasswordCard";
 import UpdatePasswordCard from "@/components/Authentication/components/UpdatePasswordCard";
 import EmailCodeCard from "@/components/Authentication/components/EmailCodeCard";
+import { ExtensionAuthHandler } from "@/components/Authentication/ExtensionAuthHandler";
 
 export default async function SignIn({
   params,
   searchParams,
 }: {
   params: { id: string; signuptype: string };
-  searchParams: { disable_button: boolean; email: string; next: string; extension?: string };
+  searchParams: {
+    disable_button: boolean;
+    email: string;
+    next: string;
+    extension?: string;
+  };
 }) {
   const { allowOauth } = getAuthTypes();
   const viewTypes = getViewTypes();
@@ -41,22 +47,22 @@ export default async function SignIn({
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Get the session for extension auth
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   // Check if this is an extension authentication request
   const isExtensionAuth = searchParams.extension === "true";
-  
+
   if (
     user &&
     !user.is_anonymous &&
     viewProp !== "update_password" &&
     viewProp !== "set_password"
   ) {
-    // If this is an extension auth request and user is already logged in,
-    // redirect to the extension-auth-success page instead of dashboard
-    if (isExtensionAuth) {
-      console.log("Extension auth - User already logged in, redirecting to success page");
-      return redirect("/extension-auth-success");
-    }
-    // Otherwise, redirect to dashboard as usual
+    // For all authenticated users, redirect to dashboard
+    // The ExtensionAuthHandler component will handle extension auth if needed
     return redirect("/dashboard");
   } else if (viewProp === "password_signin") {
     return redirect("/signin");
@@ -70,14 +76,18 @@ export default async function SignIn({
   // Cards
   const cardConfig: Record<string, JSX.Element> = {
     signin: (
-      <LoginCard
-        redirectToURL={isExtensionAuth ? "/extension-auth-success" : searchParams.next}
-        redirectMethod={redirectMethod}
-        disableButton={searchParams.disable_button}
-        searchParamsEmail={searchParams.email}
-        allowOauth={allowOauth}
-        /* Note: We'll handle the extension flow through the redirectURL */
-      />
+      <>
+        {isExtensionAuth && user && session && (
+          <ExtensionAuthHandler user={user} session={session} />
+        )}
+        <LoginCard
+          redirectToURL={searchParams.next || "/dashboard"}
+          redirectMethod={redirectMethod}
+          disableButton={searchParams.disable_button}
+          searchParamsEmail={searchParams.email}
+          allowOauth={allowOauth}
+        />
+      </>
     ),
     signup: (
       <SignUpCard
