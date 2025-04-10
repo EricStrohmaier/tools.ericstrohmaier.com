@@ -49,10 +49,7 @@ export default function ExtensionAuthSuccess({
         type: "AUTH_SUCCESS",
         data: {
           token: data.session.access_token,
-          user: {
-            id: data.session.user.id,
-            email: data.session.user.email,
-          },
+          user: data.session.user,
         },
       };
 
