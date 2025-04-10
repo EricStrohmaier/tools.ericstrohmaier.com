@@ -18,7 +18,7 @@ export default async function SignIn({
   searchParams,
 }: {
   params: { id: string; signuptype: string };
-  searchParams: { disable_button: boolean; email: string; next: string };
+  searchParams: { disable_button: boolean; email: string; next: string; extension?: string };
 }) {
   const { allowOauth } = getAuthTypes();
   const viewTypes = getViewTypes();
@@ -41,12 +41,22 @@ export default async function SignIn({
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Check if this is an extension authentication request
+  const isExtensionAuth = searchParams.extension === "true";
+  
   if (
     user &&
     !user.is_anonymous &&
     viewProp !== "update_password" &&
     viewProp !== "set_password"
   ) {
+    // If this is an extension auth request and user is already logged in,
+    // redirect to the extension-auth-success page instead of dashboard
+    if (isExtensionAuth) {
+      console.log("Extension auth - User already logged in, redirecting to success page");
+      return redirect("/extension-auth-success");
+    }
+    // Otherwise, redirect to dashboard as usual
     return redirect("/dashboard");
   } else if (viewProp === "password_signin") {
     return redirect("/signin");
@@ -61,11 +71,12 @@ export default async function SignIn({
   const cardConfig: Record<string, JSX.Element> = {
     signin: (
       <LoginCard
-        redirectToURL={searchParams.next}
+        redirectToURL={isExtensionAuth ? "/extension-auth-success" : searchParams.next}
         redirectMethod={redirectMethod}
         disableButton={searchParams.disable_button}
         searchParamsEmail={searchParams.email}
         allowOauth={allowOauth}
+        /* Note: We'll handle the extension flow through the redirectURL */
       />
     ),
     signup: (
