@@ -51,15 +51,11 @@ export default function ExtensionAuthSuccessPage() {
 
     // Function to send auth data to the extension
     const sendAuthDataToExtension = (data: any) => {
+      // Format exactly as the extension expects
       const authData = {
         type: "AUTH_SUCCESS",
-        data: {
-          token: data.session.access_token,
-          user: {
-            id: data.user?.id || data.session.user.id,
-            email: data.user?.email || data.session.user.email,
-          },
-        },
+        token: data.session.access_token,
+        user: data.user || data.session.user,
       };
 
       console.log("Sending auth data to extension:", authData);
