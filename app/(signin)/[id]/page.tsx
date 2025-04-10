@@ -12,7 +12,6 @@ import SignUpCard from "@/components/Authentication/components/SignUpCard";
 import ForgotPasswordCard from "@/components/Authentication/components/ForgotPasswordCard";
 import UpdatePasswordCard from "@/components/Authentication/components/UpdatePasswordCard";
 import EmailCodeCard from "@/components/Authentication/components/EmailCodeCard";
-import { ExtensionAuthHandler } from "@/components/Authentication/ExtensionAuthHandler";
 
 export default async function SignIn({
   params,
@@ -47,11 +46,6 @@ export default async function SignIn({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Get the session for extension auth
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
   // Check if this is an extension authentication request
   const isExtensionAuth = searchParams.extension === "true";
 
@@ -61,9 +55,11 @@ export default async function SignIn({
     viewProp !== "update_password" &&
     viewProp !== "set_password"
   ) {
-    // For all authenticated users, redirect to dashboard
-    // The ExtensionAuthHandler component will handle extension auth if needed
-    return redirect("/dashboard");
+    if (isExtensionAuth) {
+      return redirect("/extension-auth-success");
+    } else {
+      return redirect("/dashboard");
+    }
   } else if (viewProp === "password_signin") {
     return redirect("/signin");
   } else if (
@@ -77,11 +73,8 @@ export default async function SignIn({
   const cardConfig: Record<string, JSX.Element> = {
     signin: (
       <>
-        {isExtensionAuth && user && session && (
-          <ExtensionAuthHandler user={user} session={session} />
-        )}
         <LoginCard
-          redirectToURL={searchParams.next || "/dashboard"}
+          redirectToURL={searchParams.next}
           redirectMethod={redirectMethod}
           disableButton={searchParams.disable_button}
           searchParamsEmail={searchParams.email}

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, AlertCircle } from "lucide-react";
 
-export default function ExtensionAuthSuccessPage() {
+export default function ExtensionAuthSuccess() {
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading"
   );
@@ -66,33 +66,10 @@ export default function ExtensionAuthSuccessPage() {
         window.opener.postMessage(authData, "*");
       }
 
-      // Method 2: Try chrome extension API
-      try {
-        if (
-          typeof window !== "undefined" &&
-          "chrome" in window &&
-          window.chrome
-        ) {
-          console.log("Attempting to use chrome.runtime.sendMessage");
-          // @ts-ignore - Chrome extension API might not be recognized by TypeScript
-          window.chrome.runtime.sendMessage(authData, (response) => {
-            console.log("Chrome runtime message response:", response);
-          });
-        }
-      } catch (error) {
-        console.log("Chrome API error:", error);
-      }
-
-      // Method 3: Broadcast to all potential listeners
+      // Method 2: Broadcast to all potential listeners
       try {
         console.log("Broadcasting message to window");
-        window.postMessage(
-          {
-            ...authData,
-            source: "tools_auth_page",
-          },
-          "*"
-        );
+        window.postMessage(authData, "*");
       } catch (error) {
         console.log("Broadcast error:", error);
       }
@@ -101,9 +78,9 @@ export default function ExtensionAuthSuccessPage() {
     // Start the process
     fetchSessionAndNotifyExtension();
 
-    // Set up auto-close timer
+    // Set up auto-close timer (disabled for debugging)
     const closeTimer = setTimeout(() => {
-      console.log("Auto-closing window");
+      console.log("Auto-close timer expired");
       if (status === "success") {
         window.close();
       }
