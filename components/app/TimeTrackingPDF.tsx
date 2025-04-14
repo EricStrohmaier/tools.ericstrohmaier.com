@@ -146,20 +146,6 @@ const TimeTrackingPDF = ({
 
         <View style={styles.headerGrid}>
           <View style={styles.headerCol}>
-            <Text style={styles.label}>Generated On</Text>
-            <Text style={styles.value}>
-              {format(new Date(), "MMMM dd, yyyy")}
-            </Text>
-
-            {userName && (
-              <>
-                <Text style={styles.label}>User</Text>
-                <Text style={styles.value}>{userName}</Text>
-              </>
-            )}
-          </View>
-
-          <View style={styles.headerCol}>
             {dateRange?.from && (
               <>
                 <Text style={styles.label}>Date Range</Text>
@@ -196,12 +182,13 @@ const TimeTrackingPDF = ({
             const project = projects[entry.project_id];
             return (
               <View key={index} style={styles.tableRow}>
-                <Text style={styles.projectCell}>
-                  {project?.name || "Unknown Project"}
-                </Text>
-                <Text style={styles.descriptionCell}>
-                  {entry.description || "No description"}
-                </Text>
+                <Text style={styles.projectCell}>{project?.name || ""}</Text>
+                {entry.description && (
+                  <Text style={styles.descriptionCell}>
+                    {entry.description}
+                  </Text>
+                )}
+                {!entry.description && <View style={styles.descriptionCell} />}
                 <Text style={styles.dateCell}>
                   {format(new Date(entry.start_time), "MMM dd, yyyy")}
                 </Text>
@@ -222,10 +209,6 @@ const TimeTrackingPDF = ({
               {totalHours}
             </Text>
           </View>
-        </View>
-
-        <View style={styles.footer}>
-          <Text>Generated with Invoice Template App</Text>
         </View>
       </Page>
     </Document>
