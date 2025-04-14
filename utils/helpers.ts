@@ -5,14 +5,14 @@
 export const getURL = (path: string = "", subdomain: string = "", isExtension: boolean = false) => {
   // Check if NEXT_PUBLIC_SITE_URL is set and non-empty. Set this to your site URL in production env.
   let url =
-    process?.env?.NEXT_PUBLIC_GET_URL &&
-    process.env.NEXT_PUBLIC_GET_URL.trim() !== ""
-      ? process.env.NEXT_PUBLIC_GET_URL
+    process?.env?.NEXT_PUBLIC_SITE_URL &&
+      process.env.NEXT_PUBLIC_SITE_URL.trim() !== ""
+      ? process.env.NEXT_PUBLIC_SITE_URL
       : // If not set, check for NEXT_PUBLIC_VERCEL_URL, which is automatically set by Vercel.
       process?.env?.NEXT_PUBLIC_VERCEL_URL &&
         process.env.NEXT_PUBLIC_VERCEL_URL.trim() !== ""
-      ? process.env.NEXT_PUBLIC_VERCEL_URL
-      : // If neither is set, default to localhost for local development.
+        ? process.env.NEXT_PUBLIC_VERCEL_URL
+        : // If neither is set, default to localhost for local development.
         "http://localhost:3000/";
 
   url = url.replace(/\/+$/, "");
@@ -23,7 +23,7 @@ export const getURL = (path: string = "", subdomain: string = "", isExtension: b
   if (subdomain && !url.includes(`${subdomain}.`)) {
     url = url.replace("://", `://${subdomain}.`);
   }
-  
+
   // Add extension parameter if coming from extension
   const finalPath = path ? `${url}/${path}` : url;
   return isExtension ? `${finalPath}${finalPath.includes('?') ? '&' : '?'}extension=true` : finalPath;
@@ -98,7 +98,7 @@ const getToastRedirect = (
   if (disableButton) {
     redirectPath += `&disable_button=true`;
   }
-  
+
   // Add extension parameter if coming from extension
   if (isExtension) {
     redirectPath += `&extension=true`;
