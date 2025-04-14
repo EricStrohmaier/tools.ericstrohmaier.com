@@ -16,6 +16,10 @@ export const metadata: Metadata = {
   title: siteConfig.name,
   description: siteConfig.description,
   keywords: siteConfig.keywords,
+  icons: {
+    icon: "/icon.png",
+  },
+  manifest: "/favicon/site.webmanifest",
   authors: [
     {
       name: "Eric Strohmaier",
