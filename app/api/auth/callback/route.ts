@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/";
   const isExtension = searchParams.get("extension") === "true";
-  console.log("next", next, origin, "isExtension:", isExtension);
+  console.log("next", next, origin, "isExtension:", isExtension, "code:", code);
 
   if (code) {
     const supabase = createClient();
@@ -17,13 +17,11 @@ export async function GET(request: Request) {
       // Redirect to the next parameter or extension success page
       const redirectPath = isExtension ? "/extension-auth-success" : next;
 
-      // Create a simple redirect with minimal headers
-      return NextResponse.redirect(`${origin}${redirectPath}`, {
-        status: 302,
-        headers: {
-          "Cache-Control": "no-store",
-        },
-      });
+      if (redirectPath.startsWith("https://")) {
+        return NextResponse.redirect(redirectPath);
+      } else {
+        return NextResponse.redirect(`${origin}${redirectPath}`);
+      }
     }
   }
 
