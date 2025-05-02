@@ -43,8 +43,6 @@ export const getUser = async () => {
   return user;
 };
 
-
-
 // Project functions
 export const getProjects = async (): Promise<Project[]> => {
   const supabase = createClient();
@@ -77,7 +75,9 @@ export const getProject = async (id: string): Promise<Project | null> => {
   return data as Project;
 };
 
-export const createProject = async (project: Omit<Project, "id" | "created_at" | "user_id">): Promise<{ data?: Project; error?: string }> => {
+export const createProject = async (
+  project: Omit<Project, "id" | "created_at" | "user_id">
+): Promise<{ data?: Project; error?: string }> => {
   const supabase = createClient();
   const user = await getUser();
 
@@ -100,7 +100,10 @@ export const createProject = async (project: Omit<Project, "id" | "created_at" |
   return { data: data as Project };
 };
 
-export const updateProject = async (id: string, project: Partial<Project>): Promise<{ data?: Project; error?: string }> => {
+export const updateProject = async (
+  id: string,
+  project: Partial<Project>
+): Promise<{ data?: Project; error?: string }> => {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -119,13 +122,12 @@ export const updateProject = async (id: string, project: Partial<Project>): Prom
   return { data: data as Project };
 };
 
-export const deleteProject = async (id: string): Promise<{ success?: boolean; error?: string }> => {
+export const deleteProject = async (
+  id: string
+): Promise<{ success?: boolean; error?: string }> => {
   const supabase = createClient();
 
-  const { error } = await supabase
-    .from("projects")
-    .delete()
-    .eq("id", id);
+  const { error } = await supabase.from("projects").delete().eq("id", id);
 
   if (error) {
     console.error("Error deleting project:", error);
@@ -137,11 +139,11 @@ export const deleteProject = async (id: string): Promise<{ success?: boolean; er
 };
 
 // Time entry functions
-export const getTimeEntries = async (filters?: TimeFilterOptions): Promise<TimeEntry[]> => {
+export const getTimeEntries = async (
+  filters?: TimeFilterOptions
+): Promise<TimeEntry[]> => {
   const supabase = createClient();
-  let query = supabase
-    .from("time_entries")
-    .select("*");
+  let query = supabase.from("time_entries").select("*");
 
   if (filters?.startDate) {
     // Add T00:00:00 to ensure we get the start of the day in local timezone
@@ -188,7 +190,9 @@ export const getTimeEntry = async (id: string): Promise<TimeEntry | null> => {
   return data as TimeEntry;
 };
 
-export const createTimeEntry = async (timeEntry: Omit<TimeEntry, "id" | "created_at" | "user_id">): Promise<{ data?: TimeEntry; error?: string }> => {
+export const createTimeEntry = async (
+  timeEntry: Omit<TimeEntry, "id" | "created_at" | "user_id">
+): Promise<{ data?: TimeEntry; error?: string }> => {
   const supabase = createClient();
   const user = await getUser();
 
@@ -211,8 +215,13 @@ export const createTimeEntry = async (timeEntry: Omit<TimeEntry, "id" | "created
   return { data: data as TimeEntry };
 };
 
-export const updateTimeEntry = async (id: string, timeEntry: Partial<TimeEntry>): Promise<{ data?: TimeEntry; error?: string }> => {
+export const updateTimeEntry = async (
+  id: string,
+  timeEntry: Partial<TimeEntry>
+): Promise<{ data?: TimeEntry; error?: string }> => {
   const supabase = createClient();
+
+  console.log("Updating time entry:", id, timeEntry);
 
   const { data, error } = await supabase
     .from("time_entries")
@@ -230,13 +239,12 @@ export const updateTimeEntry = async (id: string, timeEntry: Partial<TimeEntry>)
   return { data: data as TimeEntry };
 };
 
-export const deleteTimeEntry = async (id: string): Promise<{ success?: boolean; error?: string }> => {
+export const deleteTimeEntry = async (
+  id: string
+): Promise<{ success?: boolean; error?: string }> => {
   const supabase = createClient();
 
-  const { error } = await supabase
-    .from("time_entries")
-    .delete()
-    .eq("id", id);
+  const { error } = await supabase.from("time_entries").delete().eq("id", id);
 
   if (error) {
     console.error("Error deleting time entry:", error);
@@ -247,7 +255,11 @@ export const deleteTimeEntry = async (id: string): Promise<{ success?: boolean; 
   return { success: true };
 };
 
-export const startTimeTracking = async (projectId: string, description?: string, tags?: string[]): Promise<{ data?: TimeEntry; error?: string }> => {
+export const startTimeTracking = async (
+  projectId: string,
+  description?: string,
+  tags?: string[]
+): Promise<{ data?: TimeEntry; error?: string }> => {
   // Store the date with timezone information preserved
   const now = new Date();
   // Convert to ISO string but store the timezone offset
@@ -257,11 +269,13 @@ export const startTimeTracking = async (projectId: string, description?: string,
     project_id: projectId,
     description,
     start_time: nowWithTimezone,
-    tags
+    tags,
   });
 };
 
-export const stopTimeTracking = async (timeEntryId: string): Promise<{ data?: TimeEntry; error?: string }> => {
+export const stopTimeTracking = async (
+  timeEntryId: string
+): Promise<{ data?: TimeEntry; error?: string }> => {
   const timeEntry = await getTimeEntry(timeEntryId);
 
   if (!timeEntry) {
@@ -275,20 +289,24 @@ export const stopTimeTracking = async (timeEntryId: string): Promise<{ data?: Ti
   // Store the date with timezone information preserved
   const now = new Date();
   const nowWithTimezone = now.toISOString();
-  
+
   // Parse the start time correctly preserving timezone
   const startTime = new Date(timeEntry.start_time);
   const endTime = now;
-  const durationInSeconds = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
+  const durationInSeconds = Math.floor(
+    (endTime.getTime() - startTime.getTime()) / 1000
+  );
 
   return updateTimeEntry(timeEntryId, {
     end_time: nowWithTimezone,
-    duration: durationInSeconds
+    duration: durationInSeconds,
   });
 };
 
 // Create a time entry manually with specified duration
-export const createManualTimeEntry = async (timeEntry: Omit<TimeEntry, "id" | "created_at" | "user_id">): Promise<{ data?: TimeEntry; error?: string }> => {
+export const createManualTimeEntry = async (
+  timeEntry: Omit<TimeEntry, "id" | "created_at" | "user_id">
+): Promise<{ data?: TimeEntry; error?: string }> => {
   const supabase = createClient();
   const user = await getUser();
 
