@@ -1,5 +1,11 @@
 import { NextRequest } from "next/server";
-import { getUser, getTimeEntry, updateTimeEntry, deleteTimeEntry } from "@/app/actions";
+import {
+  getUser,
+  getTimeEntry,
+  updateTimeEntry,
+  deleteTimeEntry,
+  TimeEntry,
+} from "@/app/actions";
 
 // GET /api/time-entries/:id - Get a specific time entry
 export async function GET(
@@ -100,20 +106,40 @@ export async function PUT(
 
     // Calculate duration if start_time and end_time are provided
     let duration = timeEntry.duration;
+
+    // Case 1: Both start_time and end_time are provided in the request
     if (body.start_time && body.end_time) {
       const startTime = new Date(body.start_time);
       const endTime = new Date(body.end_time);
       duration = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
     }
+    // Case 2: Only end_time is provided (stopping a timer) and we have a start_time in the database
+    else if (body.end_time && timeEntry.start_time && !timeEntry.end_time) {
+      const startTime = new Date(timeEntry.start_time);
+      const endTime = new Date(body.end_time);
+      duration = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
+      console.log(
+        "Calculated duration when stopping timer:",
+        duration,
+        "seconds"
+      );
+    }
 
     // Update the time entry
-    const result = await updateTimeEntry(timeEntryId, {
-      project_id: body.project_id,
-      description: body.description,
-      start_time: body.start_time,
-      end_time: body.end_time,
-      duration: duration,
-    });
+    // Only include fields that have actual values
+    const updateData: Partial<TimeEntry> = {};
+
+    if (body.project_id) updateData.project_id = body.project_id;
+    if (body.description !== undefined)
+      updateData.description = body.description;
+    if (body.start_time) updateData.start_time = body.start_time;
+    if (body.end_time) updateData.end_time = body.end_time;
+    if (duration !== undefined && duration !== null)
+      updateData.duration = duration;
+
+    console.log("Sending update with data:", updateData);
+
+    const result = await updateTimeEntry(timeEntryId, updateData);
 
     if (result.error) {
       return new Response(JSON.stringify({ error: result.error }), {
@@ -193,12 +219,18 @@ export async function DELETE(
       });
     }
 
-    return new Response(JSON.stringify({ success: true, message: "Time entry deleted successfully" }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Time entry deleted successfully",
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error deleting time entry:", error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {
