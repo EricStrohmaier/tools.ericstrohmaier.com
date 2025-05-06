@@ -9,7 +9,19 @@ import {
   deleteTimeEntry,
 } from "@/app/actions";
 import { EditTimeEntryForm } from "./EditTimeEntryForm";
-import { format as formatDate, subDays, subMonths, subYears, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, parseISO } from "date-fns";
+import {
+  format as formatDate,
+  subDays,
+  subMonths,
+  subYears,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
+  parseISO,
+} from "date-fns";
 import {
   Card,
   CardContent,
@@ -60,17 +72,21 @@ interface TimeEntryListProps {}
 
 export function TimeEntryList({}: TimeEntryListProps) {
   // Helper function to format dates with timezone consideration
-  const formatDateWithTimezone = (date: Date, formatStr: string, isStartOfDay: boolean): string => {
+  const formatDateWithTimezone = (
+    date: Date,
+    formatStr: string,
+    isStartOfDay: boolean
+  ): string => {
     // Create a new date object that preserves the local timezone
     const localDate = new Date(date);
-    
+
     // Set to start of day (00:00:00) or end of day (23:59:59) in local timezone
     if (isStartOfDay) {
       localDate.setHours(0, 0, 0, 0);
     } else {
       localDate.setHours(23, 59, 59, 999);
     }
-    
+
     // Format the date in the specified format
     return formatDate(localDate, formatStr);
   };
@@ -94,9 +110,9 @@ export function TimeEntryList({}: TimeEntryListProps) {
         const today = new Date();
         return {
           from: startOfWeek(today, { weekStartsOn: 1 }),
-          to: endOfWeek(today, { weekStartsOn: 1 })
+          to: endOfWeek(today, { weekStartsOn: 1 }),
         };
-      }
+      },
     },
     {
       id: "last7Days",
@@ -105,9 +121,9 @@ export function TimeEntryList({}: TimeEntryListProps) {
         const today = new Date();
         return {
           from: subDays(today, 7),
-          to: today
+          to: today,
         };
-      }
+      },
     },
     {
       id: "thisMonth",
@@ -116,21 +132,25 @@ export function TimeEntryList({}: TimeEntryListProps) {
         const today = new Date();
         return {
           from: startOfMonth(today),
-          to: endOfMonth(today)
+          to: endOfMonth(today),
         };
-      }
+      },
     },
     {
       id: "lastMonth",
       label: "Last Month",
       getDateRange: () => {
         const today = new Date();
+        // Calculate last month by subtracting 1 month from current date
         const lastMonth = subMonths(today, 1);
+        // Ensure we're using the exact start and end of the month in local time
+        const startDate = startOfMonth(lastMonth);
+        const endDate = endOfMonth(lastMonth);
         return {
-          from: startOfMonth(lastMonth),
-          to: endOfMonth(lastMonth)
+          from: startDate,
+          to: endDate,
         };
-      }
+      },
     },
     {
       id: "thisYear",
@@ -139,9 +159,9 @@ export function TimeEntryList({}: TimeEntryListProps) {
         const today = new Date();
         return {
           from: startOfYear(today),
-          to: endOfYear(today)
+          to: endOfYear(today),
         };
-      }
+      },
     },
     {
       id: "lastYear",
@@ -151,15 +171,17 @@ export function TimeEntryList({}: TimeEntryListProps) {
         const lastYear = subYears(today, 1);
         return {
           from: startOfYear(lastYear),
-          to: endOfYear(lastYear)
+          to: endOfYear(lastYear),
         };
-      }
-    }
+      },
+    },
   ];
 
   const [activeDateFilter, setActiveDateFilter] = useState<string>("last7Days");
   const [dateRange, setDateRange] = useState<DateRange | undefined>(
-    dateFilterOptions.find(option => option.id === "last7Days")?.getDateRange()
+    dateFilterOptions
+      .find((option) => option.id === "last7Days")
+      ?.getDateRange()
   );
   const [selectedProject, setSelectedProject] = useState<string | undefined>(
     undefined
@@ -167,24 +189,28 @@ export function TimeEntryList({}: TimeEntryListProps) {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [timeEntryToEdit, setTimeEntryToEdit] = useState<TimeEntry | null>(null);
+  const [timeEntryToEdit, setTimeEntryToEdit] = useState<TimeEntry | null>(
+    null
+  );
 
   // Apply a date filter
   const applyDateFilter = (filterId: string) => {
     setActiveDateFilter(filterId);
-    
+
     if (filterId === "custom") {
       // Keep the current date range for custom
       return;
     }
-    
+
     // Find the selected filter and apply its date range
-    const selectedFilter = dateFilterOptions.find(option => option.id === filterId);
+    const selectedFilter = dateFilterOptions.find(
+      (option) => option.id === filterId
+    );
     if (selectedFilter) {
       setDateRange(selectedFilter.getDateRange());
     }
   };
-  
+
   // Handle manual date range picker changes
   const handleDateRangeChange = (range: DateRange | undefined) => {
     setDateRange(range);
@@ -236,7 +262,7 @@ export function TimeEntryList({}: TimeEntryListProps) {
     // Close the dialog first to prevent UI from being stuck
     setDeleteConfirmOpen(false);
     setIsDeleting(true);
-    
+
     try {
       const result = await deleteTimeEntry(entryToDelete);
       if (result.error) {
@@ -285,20 +311,25 @@ export function TimeEntryList({}: TimeEntryListProps) {
         <CardContent>
           <div className="flex flex-col gap-4 mb-6">
             <div className="w-full">
-              <DateRangePicker value={dateRange} onChange={handleDateRangeChange} />
+              <DateRangePicker
+                value={dateRange}
+                onChange={handleDateRangeChange}
+              />
             </div>
             <div className="flex flex-wrap gap-2">
               {dateFilterOptions.map((option) => (
-                <Badge 
+                <Badge
                   key={option.id}
-                  variant={activeDateFilter === option.id ? "default" : "outline"}
+                  variant={
+                    activeDateFilter === option.id ? "default" : "outline"
+                  }
                   className="cursor-pointer hover:bg-secondary/50 transition-colors"
                   onClick={() => applyDateFilter(option.id)}
                 >
                   {option.label}
                 </Badge>
               ))}
-              <Badge 
+              <Badge
                 variant={activeDateFilter === "custom" ? "default" : "outline"}
                 className="cursor-pointer hover:bg-secondary/50 transition-colors"
                 onClick={() => applyDateFilter("custom")}
@@ -319,13 +350,13 @@ export function TimeEntryList({}: TimeEntryListProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Projects</SelectItem>
-                  {projects.map((project) => (
-                    <SelectItem key={project.id} value={project.id}>
-                      {project.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    {projects.map((project) => (
+                      <SelectItem key={project.id} value={project.id}>
+                        {project.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="w-full md:w-1/3 flex justify-end">
                 <TimeTrackingPDFButton
@@ -387,7 +418,10 @@ export function TimeEntryList({}: TimeEntryListProps) {
                             {entry.description || "No description"}
                           </TableCell>
                           <TableCell>
-                            {formatDate(parseISO(entry.start_time), "MMM dd, yyyy")}
+                            {formatDate(
+                              parseISO(entry.start_time),
+                              "MMM dd, yyyy"
+                            )}
                           </TableCell>
                           <TableCell>
                             {formatDuration(entry.duration)}
@@ -437,8 +471,8 @@ export function TimeEntryList({}: TimeEntryListProps) {
         </CardContent>
       </Card>
 
-      <AlertDialog 
-        open={deleteConfirmOpen} 
+      <AlertDialog
+        open={deleteConfirmOpen}
         onOpenChange={(open) => {
           if (!isDeleting) {
             setDeleteConfirmOpen(open);
@@ -478,7 +512,7 @@ export function TimeEntryList({}: TimeEntryListProps) {
             description: timeEntryToEdit.description || null,
             start_time: timeEntryToEdit.start_time,
             duration: timeEntryToEdit.duration || 0,
-            project_id: timeEntryToEdit.project_id
+            project_id: timeEntryToEdit.project_id,
           }}
           onTimeEntryUpdated={() => {
             // Reload time entries with the current filters
@@ -491,14 +525,16 @@ export function TimeEntryList({}: TimeEntryListProps) {
                 : undefined,
               projectId: selectedProject,
             };
-            
+
             // Fetch updated time entries
-            getTimeEntries(filters).then(entriesData => {
-              setTimeEntries(entriesData);
-            }).catch(error => {
-              console.error("Error fetching time entries:", error);
-              toast.error("Failed to refresh time entries");
-            });
+            getTimeEntries(filters)
+              .then((entriesData) => {
+                setTimeEntries(entriesData);
+              })
+              .catch((error) => {
+                console.error("Error fetching time entries:", error);
+                toast.error("Failed to refresh time entries");
+              });
           }}
         />
       )}

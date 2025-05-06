@@ -431,7 +431,7 @@ ${contact.email || ""}`.trim()
                       settings={companySettings}
                     />
                   }
-                  fileName={`invoice-${invoiceNumber || "draft"}.pdf`}
+                  fileName={`${invoiceNumber || "draft"}.pdf`}
                 />
               </div>
             </Card>

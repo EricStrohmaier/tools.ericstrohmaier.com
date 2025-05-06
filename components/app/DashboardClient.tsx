@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Project, getTimeEntries } from "@/app/actions";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectForm } from "./ProjectForm";
@@ -9,13 +10,18 @@ import { TimeEntryList } from "./TimeEntryList";
 import { ManualTimeEntryForm } from "./ManualTimeEntryForm";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Clock } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 
 interface DashboardClientProps {
   initialProjects: Project[];
+  activeTab?: string;
 }
 
-export function DashboardClient({ initialProjects }: DashboardClientProps) {
+export function DashboardClient({
+  initialProjects,
+  activeTab = "projects",
+}: DashboardClientProps) {
+  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [activeTimeEntry, setActiveTimeEntry] = useState<{
     id: string;
@@ -72,11 +78,21 @@ export function DashboardClient({ initialProjects }: DashboardClientProps) {
         />
       )}
 
-      <Tabs defaultValue="projects" className="w-full">
+      <Tabs defaultValue={activeTab} value={activeTab} className="w-full">
         <div className="flex justify-between items-center mb-4">
           <TabsList>
-            <TabsTrigger value="projects">Projects</TabsTrigger>
-            <TabsTrigger value="time-entries">Time Entries</TabsTrigger>
+            <TabsTrigger
+              value="projects"
+              onClick={() => router.push("/dashboard/projects")}
+            >
+              Projects
+            </TabsTrigger>
+            <TabsTrigger
+              value="time-entries"
+              onClick={() => router.push("/dashboard/time-entries")}
+            >
+              Time Entries
+            </TabsTrigger>
           </TabsList>
 
           <Button onClick={() => setProjectFormOpen(true)}>
@@ -114,10 +130,10 @@ export function DashboardClient({ initialProjects }: DashboardClientProps) {
 
         <TabsContent value="time-entries">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Time Entries</h2>
-            <ManualTimeEntryForm 
-              projects={projects} 
-              onTimeEntryAdded={() => window.location.reload()} 
+            <div></div>
+            <ManualTimeEntryForm
+              projects={projects}
+              onTimeEntryAdded={() => window.location.reload()}
             />
           </div>
           <TimeEntryList />

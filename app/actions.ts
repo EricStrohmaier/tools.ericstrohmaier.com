@@ -146,13 +146,18 @@ export const getTimeEntries = async (
   let query = supabase.from("time_entries").select("*");
 
   if (filters?.startDate) {
-    // Add T00:00:00 to ensure we get the start of the day in local timezone
+    // For the start date, we want entries that start on or after the beginning of the day
+    // We explicitly don't add a timezone to ensure it matches the database timezone
     query = query.gte("start_time", `${filters.startDate}T00:00:00`);
   }
 
   if (filters?.endDate) {
-    // Add T23:59:59 to ensure we get the end of the day in local timezone
-    query = query.lte("start_time", `${filters.endDate}T23:59:59`);
+    // For the end date, we need to ensure we don't include the next day
+    // We use a strict less-than comparison without the Z suffix to match database timezone
+    const nextDay = new Date(`${filters.endDate}T00:00:00`);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const nextDayStr = nextDay.toISOString().split("T")[0];
+    query = query.lt("start_time", `${nextDayStr}T00:00:00`);
   }
 
   if (filters?.projectId) {

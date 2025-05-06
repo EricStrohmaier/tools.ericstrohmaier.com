@@ -366,24 +366,9 @@ export const landingpageContent = {
           href: `/tracker?ref=${siteConfig.domain}`,
         },
         {
-          name: "Personal Website",
-          target: "_blank",
-          href: `https://ericstrohmaier.com/?ref=${siteConfig.domain}`,
-        },
-        {
           name: "Slackactivity",
           target: "_blank",
           href: `https://slackactivity.com/?ref=${siteConfig.domain}`,
-        },
-        {
-          name: "Local Boards",
-          target: "_blank",
-          href: `https://local-boards.com/?ref=${siteConfig.domain}`,
-        },
-        {
-          name: "Odd Pillow",
-          target: "_blank",
-          href: `https://oddpillow.com/?ref=${siteConfig.domain}`,
         },
       ],
     },
