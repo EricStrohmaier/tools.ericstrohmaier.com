@@ -28,6 +28,9 @@ export function DashboardClient({
     projectId: string;
   } | null>(null);
   const [projectFormOpen, setProjectFormOpen] = useState(false);
+  const [projectToEdit, setProjectToEdit] = useState<Project | undefined>(
+    undefined
+  );
   const [projectMap, setProjectMap] = useState<Record<string, Project>>({});
 
   // Create a map of projects for quick lookup
@@ -68,6 +71,16 @@ export function DashboardClient({
     setActiveTimeEntry(null);
   };
 
+  const handleEditProject = (project: Project) => {
+    setProjectToEdit(project);
+    setProjectFormOpen(true);
+  };
+
+  const handleProjectFormClose = () => {
+    setProjectFormOpen(false);
+    setProjectToEdit(undefined);
+  };
+
   return (
     <div className="space-y-8">
       {/* Active Time Tracker */}
@@ -95,7 +108,12 @@ export function DashboardClient({
             </TabsTrigger>
           </TabsList>
 
-          <Button onClick={() => setProjectFormOpen(true)}>
+          <Button
+            onClick={() => {
+              setProjectToEdit(undefined);
+              setProjectFormOpen(true);
+            }}
+          >
             <PlusCircle className="mr-2 h-4 w-4" />
             New Project
           </Button>
@@ -122,6 +140,7 @@ export function DashboardClient({
                   activeTimeEntry={activeTimeEntry}
                   onTimeEntryStarted={handleTimeEntryStarted}
                   onTimeEntryStopped={handleTimeEntryStopped}
+                  onEditProject={handleEditProject}
                 />
               ))}
             </div>
@@ -141,10 +160,11 @@ export function DashboardClient({
       </Tabs>
 
       <ProjectForm
+        project={projectToEdit}
         open={projectFormOpen}
-        onOpenChange={setProjectFormOpen}
+        onOpenChange={handleProjectFormClose}
         onSuccess={() => {
-          // Refresh projects after creating a new one
+          // Refresh projects after creating or updating a project
           window.location.reload();
         }}
       />

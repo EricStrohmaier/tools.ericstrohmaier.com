@@ -14,12 +14,14 @@ import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { startTimeTracking, stopTimeTracking } from "@/app/actions";
 import { toast } from "sonner";
+import { Edit } from "lucide-react";
 
 interface ProjectCardProps {
   project: Project;
   activeTimeEntry?: { id: string; projectId: string } | null;
   onTimeEntryStarted: (timeEntryId: string, projectId: string) => void;
   onTimeEntryStopped: () => void;
+  onEditProject?: (project: Project) => void;
 }
 
 export function ProjectCard({
@@ -27,6 +29,7 @@ export function ProjectCard({
   activeTimeEntry,
   onTimeEntryStarted,
   onTimeEntryStopped,
+  onEditProject,
 }: ProjectCardProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -73,7 +76,20 @@ export function ProjectCard({
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle>{project.name}</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle>{project.name}</CardTitle>
+              {onEditProject && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => onEditProject(project)}
+                  title="Edit project"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
             <CardDescription>{project.client || "No client"}</CardDescription>
           </div>
           <Badge variant={project.is_active ? "default" : "secondary"}>
