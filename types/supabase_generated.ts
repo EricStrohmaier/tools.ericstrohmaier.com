@@ -123,6 +123,44 @@ export type Database = {
           },
         ]
       }
+      focus_items: {
+        Row: {
+          id: string
+          day: string
+          project: string
+          task: string
+          user_id: string
+          created_at: string
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          day: string
+          project: string
+          task: string
+          user_id: string
+          created_at?: string
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          day?: string
+          project?: string
+          task?: string
+          user_id?: string
+          created_at?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "focus_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       surf_sessions: {
         Row: {
           created_at: string | null

@@ -214,8 +214,10 @@ function Avatar({
 }
 
 export function Header({ user }: { user: User | null }) {
-  let isHomePage = usePathname() === "/";
+  const pathname = usePathname();
+  let isHomePage = pathname === "/";
 
+  // Setup refs
   let headerRef = useRef<React.ElementRef<"div">>(null);
   let avatarRef = useRef<React.ElementRef<"div">>(null);
   let isInitial = useRef(true);
@@ -308,6 +310,11 @@ export function Header({ user }: { user: User | null }) {
       window.removeEventListener("resize", updateStyles);
     };
   }, [isHomePage]);
+
+  // Hide header on /today route
+  if (pathname === "/today" || pathname === "/week") {
+    return null;
+  }
 
   return (
     <>

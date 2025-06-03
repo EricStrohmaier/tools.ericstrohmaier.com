@@ -1,10 +1,19 @@
+"use client";
+
 import { siteConfig } from "@/config/site";
 import { landingpageContent } from "@/config/landingpage";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
   const { main, legal, products } = landingpageContent.footer.links;
+
+  // Hide footer on /today route
+  if (pathname === "/today" || pathname === "/week") {
+    return null;
+  }
 
   return (
     <footer className="border-t bg-background my-10">

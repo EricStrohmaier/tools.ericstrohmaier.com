@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ExternalLinkIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,14 @@ export function InfoBanner({
   user,
 }: InfoBannerProps) {
   const [isVisible, setIsVisible] = useState(true);
+  
+  useEffect(() => {
+    // Check localStorage on component mount
+    const isBannerClosed = localStorage.getItem('infoBannerClosed') === 'true';
+    if (isBannerClosed) {
+      setIsVisible(false);
+    }
+  }, []);
 
   // If banner should only show for logged in users and user is not logged in, don't render
   if (showOnlyWhenLoggedIn && !user) {
@@ -61,7 +69,10 @@ export function InfoBanner({
             </Link>
           </Button>
           <button
-            onClick={() => setIsVisible(false)}
+            onClick={() => {
+              setIsVisible(false);
+              localStorage.setItem('infoBannerClosed', 'true');
+            }}
             className="p-1.5 rounded-full hover:bg-accent/30 transition-colors"
             aria-label="Close banner"
           >
