@@ -32,6 +32,7 @@ export type TimeFilterOptions = {
   endDate?: string;
   projectId?: string;
   tags?: string[];
+  timezone?: string; // IANA timezone string (e.g., "America/New_York")
 };
 
 // User functions
@@ -138,6 +139,40 @@ export const deleteProject = async (
   return { success: true };
 };
 
+// Helper to get timezone offset in minutes for a specific timezone and date
+const getTimezoneOffset = (timezone: string, date: Date): number => {
+  // Get the UTC time string
+  const utcDate = new Date(date.toLocaleString("en-US", { timeZone: "UTC" }));
+  // Get the time in the target timezone
+  const tzDate = new Date(date.toLocaleString("en-US", { timeZone: timezone }));
+  // The difference is the offset
+  return (utcDate.getTime() - tzDate.getTime()) / (60 * 1000);
+};
+
+// Helper to convert a date string in user's timezone to UTC ISO string
+const toUTCDateString = (
+  dateStr: string,
+  timezone: string,
+  isEndOfDay: boolean
+): string => {
+  // dateStr is in format "yyyy-MM-dd"
+  // We want to interpret this as a date in the user's timezone
+  const timePart = isEndOfDay ? "T23:59:59.999" : "T00:00:00.000";
+
+  // Create a reference date in UTC to calculate the offset for that day
+  // This handles DST correctly since offset can vary by date
+  const refDate = new Date(`${dateStr}T12:00:00Z`);
+  const offsetMinutes = getTimezoneOffset(timezone, refDate);
+
+  // Create the UTC date by parsing as UTC and adjusting for the timezone offset
+  // If user is in GMT-5 (offset = -300), local midnight = UTC 05:00
+  // So we need to ADD the offset (which is negative) to get UTC
+  const utcDate = new Date(`${dateStr}${timePart}Z`);
+  utcDate.setMinutes(utcDate.getMinutes() + offsetMinutes);
+
+  return utcDate.toISOString();
+};
+
 // Time entry functions
 export const getTimeEntries = async (
   filters?: TimeFilterOptions
@@ -145,19 +180,20 @@ export const getTimeEntries = async (
   const supabase = createClient();
   let query = supabase.from("time_entries").select("*");
 
+  // Use the user's timezone or fall back to UTC
+  const timezone = filters?.timezone || "UTC";
+
   if (filters?.startDate) {
-    // For the start date, we want entries that start on or after the beginning of the day
-    // We explicitly don't add a timezone to ensure it matches the database timezone
-    query = query.gte("start_time", `${filters.startDate}T00:00:00`);
+    // Convert the start date (start of day in user's timezone) to UTC
+    const startDateUTC = toUTCDateString(filters.startDate, timezone, false);
+    query = query.gte("start_time", startDateUTC);
   }
 
   if (filters?.endDate) {
-    // For the end date, we need to ensure we don't include the next day
-    // We use a strict less-than comparison without the Z suffix to match database timezone
-    const nextDay = new Date(`${filters.endDate}T00:00:00`);
-    nextDay.setDate(nextDay.getDate() + 1);
-    const nextDayStr = nextDay.toISOString().split("T")[0];
-    query = query.lt("start_time", `${nextDayStr}T00:00:00`);
+    // Convert the end date (end of day in user's timezone) to UTC
+    // Add one day and use the start of that day to ensure we include all of the end date
+    const endDateUTC = toUTCDateString(filters.endDate, timezone, true);
+    query = query.lte("start_time", endDateUTC);
   }
 
   if (filters?.projectId) {

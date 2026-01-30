@@ -71,25 +71,14 @@ import { toast } from "sonner";
 interface TimeEntryListProps {}
 
 export function TimeEntryList({}: TimeEntryListProps) {
-  // Helper function to format dates with timezone consideration
-  const formatDateWithTimezone = (
-    date: Date,
-    formatStr: string,
-    isStartOfDay: boolean
-  ): string => {
-    // Create a new date object that preserves the local timezone
-    const localDate = new Date(date);
+  // Get the user's timezone from the browser
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    // Set to start of day (00:00:00) or end of day (23:59:59) in local timezone
-    if (isStartOfDay) {
-      localDate.setHours(0, 0, 0, 0);
-    } else {
-      localDate.setHours(23, 59, 59, 999);
-    }
-
-    // Format the date in the specified format
-    return formatDate(localDate, formatStr);
+  // Helper function to format dates for the API (yyyy-MM-dd)
+  const formatDateForAPI = (date: Date): string => {
+    return formatDate(date, "yyyy-MM-dd");
   };
+
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectMap, setProjectMap] = useState<Record<string, Project>>({});
@@ -192,13 +181,16 @@ export function TimeEntryList({}: TimeEntryListProps) {
   const [timeEntryToEdit, setTimeEntryToEdit] = useState<TimeEntry | null>(
     null
   );
+  // Used to force refresh when clicking the same filter
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Apply a date filter
   const applyDateFilter = (filterId: string) => {
     setActiveDateFilter(filterId);
 
     if (filterId === "custom") {
-      // Keep the current date range for custom
+      // Keep the current date range for custom, but still allow refresh
+      setRefreshKey((k) => k + 1);
       return;
     }
 
@@ -208,6 +200,8 @@ export function TimeEntryList({}: TimeEntryListProps) {
     );
     if (selectedFilter) {
       setDateRange(selectedFilter.getDateRange());
+      // Force refresh even if dates are the same
+      setRefreshKey((k) => k + 1);
     }
   };
 
@@ -235,12 +229,11 @@ export function TimeEntryList({}: TimeEntryListProps) {
         // Fetch time entries with filters
         const filters = {
           startDate: dateRange?.from
-            ? formatDateWithTimezone(dateRange.from, "yyyy-MM-dd", true)
+            ? formatDateForAPI(dateRange.from)
             : undefined,
-          endDate: dateRange?.to
-            ? formatDateWithTimezone(dateRange.to, "yyyy-MM-dd", false)
-            : undefined,
+          endDate: dateRange?.to ? formatDateForAPI(dateRange.to) : undefined,
           projectId: selectedProject,
+          timezone: userTimezone,
         };
 
         const entriesData = await getTimeEntries(filters);
@@ -254,7 +247,7 @@ export function TimeEntryList({}: TimeEntryListProps) {
     };
 
     fetchData();
-  }, [dateRange, selectedProject]);
+  }, [dateRange, selectedProject, userTimezone, refreshKey]);
 
   const handleDeleteTimeEntry = async () => {
     if (!entryToDelete) return;
@@ -518,12 +511,11 @@ export function TimeEntryList({}: TimeEntryListProps) {
             // Reload time entries with the current filters
             const filters = {
               startDate: dateRange?.from
-                ? formatDateWithTimezone(dateRange.from, "yyyy-MM-dd", true)
+                ? formatDateForAPI(dateRange.from)
                 : undefined,
-              endDate: dateRange?.to
-                ? formatDateWithTimezone(dateRange.to, "yyyy-MM-dd", false)
-                : undefined,
+              endDate: dateRange?.to ? formatDateForAPI(dateRange.to) : undefined,
               projectId: selectedProject,
+              timezone: userTimezone,
             };
 
             // Fetch updated time entries
